@@ -1,66 +1,39 @@
-<!-- Prepared by: Eng. Aisha Alhuwais | ID: 22101186 -->
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>وحدة تكنولوجيات المعلومات</title>
+  <title>متابعة الطلبات</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Cairo', Tahoma, Arial, sans-serif; background: #f8fafc; margin: 0; padding: 0; }
-    .container { max-width: 800px; margin: 40px auto; background: #fff; border-radius: 16px; box-shadow: 0 2px 8px #0001; padding: 24px; }
-    h2 { margin-bottom: 18px; color: #1e293b; font-family: 'Cairo', Tahoma, Arial, sans-serif; }
-    .form-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 0;
-    }
-    .form-row > * {
-      flex: 1 1 130px;
-      min-width: 110px;
-      font-family: 'Cairo', Tahoma, Arial, sans-serif;
-    }
-    .add-btn-row {
-      margin: 14px 0 18px 0;
-      display: flex;
-      justify-content: stretch;
-    }
-    .add-btn-row button {
-      width: 100%;
-      font-size: 18px;
-      padding: 12px 0;
-      font-weight: 700;
-      letter-spacing: 1px;
-      border-radius: 8px;
-      background: #2563eb;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      transition: 0.2s;
-      font-family: 'Cairo', Tahoma, Arial, sans-serif;
-    }
-    .add-btn-row button:hover { background: #1d4ed8; }
-    input, select, button {
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
-      font-size: 15px;
-      font-family: 'Cairo', Tahoma, Arial, sans-serif;
-    }
-    table { width: 100%; border-collapse: collapse; font-family: 'Cairo', Tahoma, Arial, sans-serif; }
-    th, td { padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: right; }
-    th { background: #f1f5f9; color: #374151; }
-    .status { padding: 2px 10px; border-radius: 8px; font-size: 14px; font-family: 'Cairo', Tahoma, Arial, sans-serif;}
-    .todo { background: #fbbf24; color: #fff; }
-    .done { background: #22c55e; color: #fff; }
+    body { font-family: 'Cairo', Tahoma, Arial, sans-serif; background: #f8fafc; margin: 0; padding: 0;}
+    .container { max-width: 800px; margin: 40px auto; background: #fff; border-radius: 16px; box-shadow: 0 2px 8px #0001; padding: 24px;}
+    h2 { margin-bottom: 18px; color: #1e293b;}
+    .logout-btn { float:left; background: #ef4444; color:#fff; border:none; border-radius:8px; padding:8px 20px; font-family:'Cairo',sans-serif; font-weight:700; cursor:pointer;}
+    .user-info {float:right; color:#2563eb; font-weight:700;}
+    .form-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 0;}
+    .form-row > * { flex: 1 1 130px; min-width: 110px;}
+    .add-btn-row { margin: 14px 0 18px 0; display: flex; justify-content: stretch;}
+    .add-btn-row button { width: 100%; font-size: 18px; padding: 12px 0; font-weight: 700; letter-spacing: 1px; border-radius: 8px; background: #2563eb; color: #fff; border: none; cursor: pointer; transition: 0.2s;}
+    .add-btn-row button:hover { background: #1d4ed8;}
+    input, select, button { padding: 8px 10px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 15px;}
+    table { width: 100%; border-collapse: collapse;}
+    th, td { padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: right;}
+    th { background: #f1f5f9; color: #374151;}
+    .status { padding: 2px 10px; border-radius: 8px; font-size: 14px;}
+    .todo { background: #fbbf24; color: #fff;}
+    .done { background: #22c55e; color: #fff;}
     @media (max-width: 600px) {
-      .form-row { flex-direction: column; gap: 10px; }
-      .container { padding: 8px; }
-      .add-btn-row { justify-content: stretch; }
+      .form-row { flex-direction: column; gap: 10px;}
+      .container { padding: 8px;}
+      .add-btn-row { justify-content: stretch;}
     }
   </style>
 </head>
 <body>
   <div class="container">
+    <span class="user-info" id="userInfo"></span>
+    <button class="logout-btn" onclick="logout()">خروج</button>
+    <div style="clear:both"></div>
     <h2>متابعة الطلب</h2>
     <form id="taskForm" autocomplete="off">
       <div class="form-row">
@@ -77,7 +50,6 @@
           <option>4</option>
         </select>
         <input type="text" id="title" placeholder="الفصل/المكتب" required />
-
         <select id="assignee" required>
           <option value="">اختر العضو</option>
           <option>محمد وهبة</option>
@@ -100,6 +72,7 @@
           <th>المبنى</th>
           <th>الدور</th>
           <th>مكلّف بها</th>
+          <th>أنشأها</th>
           <th>الحالة</th>
           <th>تحكم</th>
         </tr>
@@ -109,6 +82,11 @@
   </div>
 
   <script>
+    // تحقق من وجود مستخدم مسجل دخول
+    const user = localStorage.getItem('loggedUser');
+    if (!user) window.location.href = "login.html";
+    document.getElementById('userInfo').textContent = "المستخدم: " + user;
+
     let tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
 
     function renderTasks() {
@@ -121,6 +99,7 @@
             <td>${task.building}</td>
             <td>${task.floor}</td>
             <td>${task.assignee}</td>
+            <td>${task.createdBy || '-'}</td>
             <td>
               <span class="status ${task.status === 'منجزة' ? 'done' : 'todo'}">${task.status}</span>
             </td>
@@ -139,12 +118,17 @@
       const building = document.getElementById('building').value;
       const floor = document.getElementById('floor').value;
       const assignee = document.getElementById('assignee').value;
+
       if (!title || !assignee || !building || !floor) return;
-      tasks.push({ title, building, floor, assignee, status: 'قيد التنفيذ' });
+      tasks.push({
+        title, building, floor, assignee,
+        status: 'قيد التنفيذ',
+        createdBy: user
+      });
       localStorage.setItem('tasks', JSON.stringify(tasks));
       renderTasks();
       document.getElementById('taskForm').reset();
-      alert(`تم تعيين المهمة "${title}" (${building}، الدور ${floor}) إلى ${assignee}.\n`);
+      alert(`تم تعيين المهمة "${title}" (${building}، الدور ${floor}) إلى ${assignee}.`);
     };
 
     function markDone(i) {
@@ -154,7 +138,6 @@
         renderTasks();
       }
     }
-
     function delTask(i) {
       if (confirm('هل أنت متأكد من حذف المهمة؟')) {
         tasks.splice(i, 1);
@@ -162,9 +145,12 @@
         renderTasks();
       }
     }
+    function logout() {
+      localStorage.removeItem('loggedUser');
+      window.location.href = "login.html";
+    }
 
     renderTasks();
   </script>
 </body>
 </html>
-
