@@ -2,8 +2,14 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>وحدة تكنولوجيات المعلومات</title>
+  <!-- خط Cairo -->
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  <!-- Firebase App (core) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <!-- Firestore -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
     body { font-family: 'Cairo', Tahoma, Arial, sans-serif; background: #f8fafc; margin: 0; padding: 0; }
     .container { max-width: 800px; margin: 40px auto; background: #fff; border-radius: 16px; box-shadow: 0 2px 8px #0001; padding: 24px; }
@@ -109,9 +115,44 @@
   </div>
 
   <script>
-    let tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+    // تهيئة Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDqMFfWwtzXInusoxsJxgEO5_ptz_fRk6E",
+      authDomain: "itu-coa.firebaseapp.com",
+      projectId: "itu-coa",
+      storageBucket: "itu-coa.appspot.com",
+      messagingSenderId: "790497191019",
+      appId: "1:790497191019:web:a5b4de6f65574457503d2e",
+      measurementId: "G-D5L66D3QZP"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    function renderTasks() {
+    // إضافة مهمة إلى Firestore عند الضغط على زر "إضافة"
+    document.getElementById('taskForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const title = document.getElementById('title').value.trim();
+      const building = document.getElementById('building').value;
+      const floor = document.getElementById('floor').value;
+      const assignee = document.getElementById('assignee').value;
+      if (!title || !assignee || !building || !floor) return;
+
+      // إضافة بيانات المهمة إلى Firestore
+      await db.collection('tasks').add({
+        title: title,
+        building: building,
+        floor: floor,
+        assignee: assignee,
+        status: 'قيد التنفيذ',
+        timestamp: new Date()
+      });
+
+      alert(`تم تعيين المهمة "${title}" (${building}، الدور ${floor}) إلى ${assignee}.\n`);
+      this.reset();
+    };
+
+    // جلب المهام من Firestore وعرضها في الجدول
+    function renderTasks(tasks) {
       const tbody = document.getElementById('taskList');
       tbody.innerHTML = '';
       tasks.forEach((task, i) => {
@@ -125,46 +166,34 @@
               <span class="status ${task.status === 'منجزة' ? 'done' : 'todo'}">${task.status}</span>
             </td>
             <td>
-              <button onclick="markDone(${i})" style="background:#10b981">${task.status === 'منجزة' ? '✔️' : 'إنهاء'}</button>
-              <button onclick="delTask(${i})" style="background:#ef4444">حذف</button>
+              <button onclick="markDone('${task.id}')" style="background:#10b981">${task.status === 'منجزة' ? '✔️' : 'إنهاء'}</button>
+              <button onclick="delTask('${task.id}')" style="background:#ef4444">حذف</button>
             </td>
           </tr>
         `;
       });
     }
 
-    document.getElementById('taskForm').onsubmit = function(e) {
-      e.preventDefault();
-      const title = document.getElementById('title').value.trim();
-      const building = document.getElementById('building').value;
-      const floor = document.getElementById('floor').value;
-      const assignee = document.getElementById('assignee').value;
-      if (!title || !assignee || !building || !floor) return;
-      tasks.push({ title, building, floor, assignee, status: 'قيد التنفيذ' });
-      localStorage.setItem('tasks', JSON.stringify(tasks));
-      renderTasks();
-      document.getElementById('taskForm').reset();
-      alert(`تم تعيين المهمة "${title}" (${building}، الدور ${floor}) إلى ${assignee}.\n`);
-    };
+    // متابعة التغييرات بشكل لحظي من Firestore
+    db.collection('tasks').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+      const tasks = [];
+      snapshot.forEach(doc => {
+        tasks.push({ ...doc.data(), id: doc.id });
+      });
+      renderTasks(tasks);
+    });
 
-    function markDone(i) {
-      if (tasks[i].status !== 'منجزة') {
-        tasks[i].status = 'منجزة';
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-        renderTasks();
-      }
+    // إنهاء المهمة (تعديل الحالة في Firestore)
+    function markDone(id) {
+      db.collection('tasks').doc(id).update({ status: 'منجزة' });
     }
 
-    function delTask(i) {
+    // حذف المهمة من Firestore
+    function delTask(id) {
       if (confirm('هل أنت متأكد من حذف المهمة؟')) {
-        tasks.splice(i, 1);
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-        renderTasks();
+        db.collection('tasks').doc(id).delete();
       }
     }
-
-    renderTasks();
   </script>
 </body>
 </html>
-
