@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>وحدة تكنولوجيات المعلومات</title>
-  <!-- خط Cairo -->
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
   <!-- Firebase App (core) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -12,88 +11,74 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
     body { font-family: 'Cairo', Tahoma, Arial, sans-serif; background: #f8fafc; margin: 0; padding: 0; }
-    .container { max-width: 800px; margin: 40px auto; background: #fff; border-radius: 16px; box-shadow: 0 2px 8px #0001; padding: 24px; }
-    h2 { margin-bottom: 18px; color: #1e293b; font-family: 'Cairo', Tahoma, Arial, sans-serif; }
-    .form-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 0;
-    }
-    .form-row > * {
-      flex: 1 1 130px;
-      min-width: 110px;
-      font-family: 'Cairo', Tahoma, Arial, sans-serif;
-    }
-    .add-btn-row {
-      margin: 14px 0 18px 0;
-      display: flex;
-      justify-content: stretch;
-    }
+    .container { max-width: 850px; margin: 28px auto; background: #fff; border-radius: 16px; box-shadow: 0 2px 8px #0001; padding: 20px 14px; }
+    h2 { margin-bottom: 16px; color: #1e293b; text-align: center; font-family: 'Cairo', Tahoma, Arial, sans-serif; }
+    .form-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 0; }
+    .form-row > * { flex: 1 1 130px; min-width: 110px; font-family: 'Cairo', Tahoma, Arial, sans-serif; }
+    .add-btn-row { margin: 14px 0 18px 0; display: flex; justify-content: stretch; }
     .add-btn-row button {
-      width: 100%;
-      font-size: 18px;
-      padding: 12px 0;
-      font-weight: 700;
-      letter-spacing: 1px;
-      border-radius: 8px;
-      background: #2563eb;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      transition: 0.2s;
-      font-family: 'Cairo', Tahoma, Arial, sans-serif;
+      width: 100%; font-size: 18px; padding: 12px 0; font-weight: 700; letter-spacing: 1px;
+      border-radius: 8px; background: #2563eb; color: #fff; border: none; cursor: pointer;
+      transition: 0.2s; font-family: 'Cairo', Tahoma, Arial, sans-serif;
     }
     .add-btn-row button:hover { background: #1d4ed8; }
-    input, select, button {
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
-      font-size: 15px;
-      font-family: 'Cairo', Tahoma, Arial, sans-serif;
+    input, select, textarea {
+      padding: 8px 10px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 15px;
+      font-family: 'Cairo', Tahoma, Arial, sans-serif; box-sizing: border-box;
     }
-    table { width: 100%; border-collapse: collapse; font-family: 'Cairo', Tahoma, Arial, sans-serif; }
+    textarea { resize: vertical; min-height: 48px; max-height: 140px; }
+    table { width: 100%; border-collapse: collapse; font-family: 'Cairo', Tahoma, Arial, sans-serif; margin-bottom: 28px;}
     th, td { padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: right; }
     th { background: #f1f5f9; color: #374151; }
     .status { padding: 2px 10px; border-radius: 8px; font-size: 14px; font-family: 'Cairo', Tahoma, Arial, sans-serif;}
     .todo { background: #fbbf24; color: #fff; }
     .done { background: #22c55e; color: #fff; }
-    @media (max-width: 600px) {
-      .form-row { flex-direction: column; gap: 10px; }
-      .container { padding: 8px; }
-      .add-btn-row { justify-content: stretch; }
+    .controls button {
+      margin-left: 2px; margin-right: 2px; font-size: 14px; border: none; border-radius: 8px;
+      color: #fff; cursor: pointer; padding: 6px 14px; font-family: 'Cairo', Tahoma, Arial, sans-serif;
     }
+    .controls .done-btn { background: #10b981; }
+    .controls .del-btn { background: #ef4444; }
+    @media (max-width: 700px) {
+      .container { max-width: 99vw; padding: 6px; }
+      .form-row { flex-direction: column; gap: 10px; }
+      table, th, td { font-size: 13px; }
+    }
+    .field-box { display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px; }
   </style>
 </head>
 <body>
+  <!-- إضافة طلب جديد -->
   <div class="container">
-    <h2>متابعة الطلب</h2>
-    <form id="taskForm" autocomplete="off">
+    <h2>إضافة طلب جديد</h2>
+    <form id="addTaskForm" autocomplete="off">
       <div class="form-row">
-        <select id="building" required>
-          <option value="">اختر المبنى</option>
-          <option>الشمالي</option>
-          <option>الجنوبي</option>
-        </select>
-        <select id="floor" required>
-          <option value="">الدور</option>
-          <option>1</option>
-          <option>2</option>
-          <option>3</option>
-          <option>4</option>
-        </select>
-        <input type="text" id="title" placeholder="الفصل/المكتب" required />
-
-        <select id="assignee" required>
-          <option value="">اختر العضو</option>
-          <option>محمد وهبة</option>
-          <option>شيخة الغريب</option>
-          <option>دلال العتيبي</option>
-          <option>نورية سالم</option>
-          <option>غنيمة بشاره</option>
-          <option>ارافيند موهان</option>
-          <option>مريم العلي</option>
-        </select>
+        <div class="field-box">
+          <label for="building">المبنى</label>
+          <select id="building" required>
+            <option value="">اختر المبنى</option>
+            <option>الشمالي</option>
+            <option>الجنوبي</option>
+          </select>
+        </div>
+        <div class="field-box">
+          <label for="floor">الدور</label>
+          <select id="floor" required>
+            <option value="">الدور</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+          </select>
+        </div>
+        <div class="field-box">
+          <label for="classroom">الفصل</label>
+          <input type="text" id="classroom" placeholder="رقم الفصل/المكتب" required />
+        </div>
+      </div>
+      <div class="field-box" style="margin-top:10px;">
+        <label for="problem">المشكلة</label>
+        <textarea id="problem" placeholder="وصف المشكلة بالتفصيل" required></textarea>
       </div>
       <div class="add-btn-row">
         <button type="submit">إضافة</button>
@@ -102,9 +87,26 @@
     <table>
       <thead>
         <tr>
-          <th>الفصل</th>
           <th>المبنى</th>
           <th>الدور</th>
+          <th>الفصل</th>
+          <th>المشكلة</th>
+        </tr>
+      </thead>
+      <tbody id="addedTasks"></tbody>
+    </table>
+  </div>
+  
+  <!-- متابعة الطلبات -->
+  <div class="container">
+    <h2>متابعة الطلب</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>المبنى</th>
+          <th>الدور</th>
+          <th>الفصل</th>
+          <th>المشكلة</th>
           <th>مكلّف بها</th>
           <th>الحالة</th>
           <th>تحكم</th>
@@ -114,6 +116,7 @@
     </table>
   </div>
 
+  <!-- Firebase Config & JS -->
   <script>
     // تهيئة Firebase
     const firebaseConfig = {
@@ -128,72 +131,126 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // إضافة مهمة إلى Firestore عند الضغط على زر "إضافة"
-    document.getElementById('taskForm').onsubmit = async function(e) {
+    const assigneeOptions = [
+      "", "محمد وهبة", "شيخة الغريب", "دلال العتيبي", "نورية سالم", "غنيمة بشاره", "ارافيند موهان", "مريم العلي"
+    ];
+
+    let isAuthorized = false;
+    let latestTasks = [];
+    const PASSWORD = "210113871"; 
+
+    // إضافة طلب جديد
+    document.getElementById('addTaskForm').onsubmit = async function(e) {
       e.preventDefault();
-      const title = document.getElementById('title').value.trim();
       const building = document.getElementById('building').value;
       const floor = document.getElementById('floor').value;
-      const assignee = document.getElementById('assignee').value;
-      if (!title || !assignee || !building || !floor) return;
-
-      // إضافة بيانات المهمة إلى Firestore
+      const classroom = document.getElementById('classroom').value.trim();
+      const problem = document.getElementById('problem').value.trim();
+      if (!building || !floor || !classroom || !problem) return;
       await db.collection('tasks').add({
-        title: title,
-        building: building,
-        floor: floor,
-        assignee: assignee,
+        building, floor, classroom, problem,
+        assignee: "",
         status: 'قيد التنفيذ',
         timestamp: new Date()
       });
-
-      alert(`تم تعيين المهمة "${title}" (${building}، الدور ${floor}) إلى ${assignee}.\n`);
       this.reset();
     };
 
-    // جلب المهام من Firestore وعرضها في الجدول
     function renderTasks(tasks) {
-      const tbody = document.getElementById('taskList');
-      tbody.innerHTML = '';
-      tasks.forEach((task, i) => {
-        tbody.innerHTML += `
+      latestTasks = tasks;
+      // الجدول الأول
+      const tbody1 = document.getElementById('addedTasks');
+      tbody1.innerHTML = '';
+      tasks.forEach(task => {
+        tbody1.innerHTML += `
           <tr>
-            <td>${task.title}</td>
             <td>${task.building}</td>
             <td>${task.floor}</td>
-            <td>${task.assignee}</td>
-            <td>
-              <span class="status ${task.status === 'منجزة' ? 'done' : 'todo'}">${task.status}</span>
-            </td>
-            <td>
-              <button onclick="markDone('${task.id}')" style="background:#10b981">${task.status === 'منجزة' ? '✔️' : 'إنهاء'}</button>
-              <button onclick="delTask('${task.id}')" style="background:#ef4444">حذف</button>
+            <td>${task.classroom}</td>
+            <td>${task.problem}</td>
+          </tr>
+        `;
+      });
+      const tbody2 = document.getElementById('taskList');
+      tbody2.innerHTML = '';
+      tasks.forEach(task => {
+        let assigneeSelect = `<select onchange="checkAssign('${task.id}', this)" style="font-size:14px;border-radius:6px;padding:3px; font-family:'Cairo',Tahoma,Arial,sans-serif;" ${isAuthorized ? "" : "disabled"}>`;
+        assigneeOptions.forEach(opt => {
+          assigneeSelect += `<option${task.assignee===opt?' selected':''}>${opt}</option>`;
+        });
+        assigneeSelect += `</select>`;
+        tbody2.innerHTML += `
+          <tr>
+            <td>${task.building}</td>
+            <td>${task.floor}</td>
+            <td>${task.classroom}</td>
+            <td>${task.problem}</td>
+            <td>${assigneeSelect}</td>
+            <td><span class="status ${task.status === 'منجزة' ? 'done' : 'todo'}">${task.status}</span></td>
+            <td class="controls">
+              ${isAuthorized 
+                ? `
+                  <button class="done-btn" onclick="markDone('${task.id}')">${task.status === 'منجزة' ? '✔️' : 'إنهاء'}</button>
+                  <button class="del-btn" onclick="delTask('${task.id}')">حذف</button>
+                `
+                : `
+                  <button class="done-btn" onclick="requirePassword()">Done</button>
+                  <button class="del-btn" onclick="requirePassword()">Delete</button>
+                `
+              }
             </td>
           </tr>
         `;
       });
     }
 
-    // متابعة التغييرات بشكل لحظي من Firestore
+    function requirePassword() {
+      if (!isAuthorized) {
+        const pw = prompt("الرجاء إدخال كلمة السر لتفعيل التعديلات:");
+        if (pw === PASSWORD) {
+          isAuthorized = true;
+          alert("تم تفعيل صلاحية التعديل!");
+          renderTasks(latestTasks);
+        } else {
+          alert("كلمة السر غير صحيحة!");
+        }
+      }
+    }
+    function checkAssign(id, selectElem) {
+      if (!isAuthorized) {
+        requirePassword();
+        selectElem.value = ""; 
+        return;
+      }
+      updateAssignee(id, selectElem.value);
+    }
+
     db.collection('tasks').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
       const tasks = [];
-      snapshot.forEach(doc => {
-        tasks.push({ ...doc.data(), id: doc.id });
-      });
+      snapshot.forEach(doc => tasks.push({ ...doc.data(), id: doc.id }));
       renderTasks(tasks);
     });
 
-    // إنهاء المهمة (تعديل الحالة في Firestore)
     function markDone(id) {
       db.collection('tasks').doc(id).update({ status: 'منجزة' });
     }
-
-    // حذف المهمة من Firestore
     function delTask(id) {
-      if (confirm('هل أنت متأكد من حذف المهمة؟')) {
+      if (!isAuthorized) {
+        requirePassword();
+        return;
+      }
+      if (confirm('هل أنت متأكد من حذف الطلب؟')) {
         db.collection('tasks').doc(id).delete();
       }
     }
+    function updateAssignee(id, val) {
+      db.collection('tasks').doc(id).update({ assignee: val });
+    }
+    window.markDone = markDone;
+    window.delTask = delTask;
+    window.requirePassword = requirePassword;
+    window.checkAssign = checkAssign;
+    window.updateAssignee = updateAssignee;
   </script>
 </body>
 </html>
