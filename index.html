@@ -45,26 +45,20 @@
       table, th, td { font-size: 13px; }
     }
     .field-box { display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px; }
-    .lock-row { display: flex; justify-content: flex-end; margin-bottom: 6px; }
     .lock-btn {
       background: none;
       border: none;
       cursor: pointer;
-      padding: 0 3px;
-      margin: 0 0 0 6px;
-      transition: filter 0.18s;
-      outline: none;
+      position: absolute;
+      left: 16px;
+      top: 7px;
+      padding: 0;
+      margin: 0;
+      transition: filter 0.15s;
     }
-    .lock-btn svg { width: 28px; height: 28px; vertical-align: middle; }
-    .lock-btn.unlocked svg { filter: drop-shadow(0 0 3px #10b981) brightness(1.5);}
-    .admin-alert {
-      color: #10b981;
-      font-size: 15px;
-      font-weight: bold;
-      text-align: center;
-      margin-bottom: 4px;
-      display: none;
-    }
+    .lock-btn svg { width: 27px; height: 27px; vertical-align: middle; }
+    .lock-btn:hover { filter: brightness(0.5); }
+    .lock-btn.unlocked svg { filter: drop-shadow(0 0 3px #10b981) brightness(1.4); }
   </style>
 </head>
 <body>
@@ -119,13 +113,12 @@
   
   <!-- متابعة الطلبات -->
   <div class="container">
-    <div class="lock-row">
+    <h2>
+      متابعة الطلب
       <button id="lockBtn" class="lock-btn" title="دخول المشرف">
         <svg viewBox="0 0 24 24" fill="none"><path d="M17 11V7A5 5 0 0 0 7 7v4M5 11h14v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7Zm7 3v2" stroke="#1e293b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-    </div>
-    <div id="adminAlert" class="admin-alert">تم تفعيل صلاحية المشرف 👩‍💻</div>
-    <h2>متابعة الطلب</h2>
+    </h2>
     <table>
       <thead>
         <tr>
@@ -163,8 +156,9 @@
 
     let isAuthorized = false;
     let latestTasks = [];
-    const PASSWORD = "210113871"; 
+    const PASSWORD = "art@4231"; 
 
+    // زر القفل 
     document.getElementById('lockBtn').onclick = function(e) {
       e.preventDefault();
       if (isAuthorized) {
@@ -175,15 +169,13 @@
       if (pw === PASSWORD) {
         isAuthorized = true;
         this.classList.add("unlocked");
-        document.getElementById("adminAlert").style.display = "block";
-        setTimeout(() => { document.getElementById("adminAlert").style.display = "none"; }, 3000);
+        alert("تم تفعيل الصلاحية !");
         renderTasks(latestTasks);
       } else {
         alert("كلمة السر غير صحيحة!");
       }
     };
 
-    // إضافة طلب جديد
     document.getElementById('addTaskForm').onsubmit = async function(e) {
       e.preventDefault();
       const building = document.getElementById('building').value;
@@ -255,15 +247,13 @@
         if (pw === PASSWORD) {
           isAuthorized = true;
           document.getElementById("lockBtn").classList.add("unlocked");
-          document.getElementById("adminAlert").style.display = "block";
-          setTimeout(() => { document.getElementById("adminAlert").style.display = "none"; }, 3000);
+          alert("تم تفعيل صلاحية التعديل!");
           renderTasks(latestTasks);
         } else {
           alert("كلمة السر غير صحيحة!");
         }
       }
     }
-
     window.checkAssign = function(id, selectElem) {
       if (!isAuthorized) {
         window.requirePassword();
@@ -272,7 +262,6 @@
       }
       window.updateAssignee(id, selectElem.value);
     }
-
     db.collection('tasks').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
       const tasks = [];
       snapshot.forEach(doc => tasks.push({ ...doc.data(), id: doc.id }));
