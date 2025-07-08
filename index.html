@@ -57,79 +57,67 @@
       transition: filter 0.15s;
     }
     .lock-btn svg { width: 27px; height: 27px; vertical-align: middle; }
-    .lock-btn:hover { filter: brightness(0.5); }
     .lock-btn.unlocked svg { filter: drop-shadow(0 0 3px #10b981) brightness(1.4); }
-
-    /* Modal styles */
+    /* Modal Password */
     .modal-bg {
-      display: none; position: fixed; top: 0; right: 0; left: 0; bottom: 0;
-      background: #0005; z-index: 999; align-items: center; justify-content: center;
+      display: none;
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.27);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
     }
-    .modal-bg.show { display: flex; }
+    .modal-bg.active { display: flex; }
     .modal-box {
       background: #fff;
       border-radius: 16px;
-      box-shadow: 0 4px 20px #0002;
-      max-width: 330px;
-      width: 94vw;
-      padding: 30px 24px 24px 24px;
+      box-shadow: 0 2px 16px #0003;
+      padding: 28px 18px 22px 18px;
+      max-width: 340px;
+      width: 96vw;
       text-align: center;
       font-family: 'Cairo', Tahoma, Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      animation: fadein .3s;
     }
-    @keyframes fadein { from{transform:translateY(40px); opacity:.4} to{transform:none; opacity:1} }
     .modal-box input[type="password"] {
-      width: 95%;
-      padding: 10px 12px;
-      font-size: 17px;
-      margin-top: 8px;
+      padding: 10px;
       border-radius: 8px;
-      border: 1px solid #e2e8f0;
-      background: #f8fafc;
-      text-align: center;
+      border: 1px solid #d1d5db;
+      font-size: 16px;
+      margin-top: 8px;
+      width: 90%;
       font-family: 'Cairo', Tahoma, Arial, sans-serif;
+      text-align: center;
+      letter-spacing: 2px;
+      margin-bottom: 14px;
     }
     .modal-box button {
-      margin-top: 8px;
-      width: 100%;
+      padding: 8px 26px;
+      border-radius: 8px;
+      border: none;
       background: #2563eb;
       color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 10px;
       font-size: 16px;
-      font-weight: 700;
-      letter-spacing: 1px;
       font-family: 'Cairo', Tahoma, Arial, sans-serif;
+      font-weight: 700;
       cursor: pointer;
-      transition: 0.15s;
+      transition: background 0.2s;
+      margin-top: 5px;
     }
     .modal-box button:hover { background: #1d4ed8; }
-    .modal-box .err {
-      color: #dc2626;
-      font-size: 15px;
-      margin: 6px 0 0 0;
-      min-height: 23px;
-      font-family: 'Cairo', Tahoma, Arial, sans-serif;
+    .modal-close {
+      background: none;
+      border: none;
+      color: #888;
+      position: absolute;
+      top: 13px;
+      right: 19px;
+      font-size: 23px;
+      cursor: pointer;
     }
+    .modal-err { color: #ef4444; font-size: 15px; min-height: 23px; margin-bottom: 2px;}
   </style>
 </head>
 <body>
-  <!-- نافذة كلمة السر -->
-  <div id="modalBg" class="modal-bg" onclick="hideModal(event)">
-    <div class="modal-box" onclick="event.stopPropagation()">
-      <div style="font-size:20px; font-weight:700; margin-bottom:5px;">
-        Password <span style="font-size:19px;">🔒</span>
-      </div>
-      <input id="modalPass" type="password" placeholder="كلمة السر..." autocomplete="current-password" />
-      <div class="err" id="modalErr"></div>
-      <button onclick="submitPassword()">دخول</button>
-    </div>
-  </div>
-  <!-- إضافة طلب جديد -->
   <div class="container">
     <h2>إضافة طلب جديد</h2>
     <form id="addTaskForm" autocomplete="off">
@@ -177,11 +165,12 @@
       <tbody id="addedTasks"></tbody>
     </table>
   </div>
+  
   <!-- متابعة الطلبات -->
   <div class="container">
     <h2>
       متابعة الطلب
-      <button id="lockBtn" class="lock-btn" title="دخول المشرف">
+      <button id="lockBtn" class="lock-btn" title="دخول المشرف" type="button">
         <svg viewBox="0 0 24 24" fill="none"><path d="M17 11V7A5 5 0 0 0 7 7v4M5 11h14v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7Zm7 3v2" stroke="#1e293b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
     </h2>
@@ -200,6 +189,20 @@
       <tbody id="taskList"></tbody>
     </table>
   </div>
+
+  <!-- Modal Password -->
+  <div class="modal-bg" id="modalBg">
+    <div class="modal-box" dir="rtl" style="position:relative;">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+      <h3 style="margin-top:2px;margin-bottom:12px;font-weight:900;font-size:22px;color:#1e293b;">دخول المشرف</h3>
+      <div class="modal-err" id="modalErr"></div>
+      <input type="password" id="modalPw" placeholder="كلمة السر..." autocomplete="off" />
+      <br>
+      <button onclick="submitModalPw()">دخول</button>
+    </div>
+  </div>
+
+  <!-- Firebase Config & JS -->
   <script>
     // تهيئة Firebase
     const firebaseConfig = {
@@ -220,42 +223,40 @@
 
     let isAuthorized = false;
     let latestTasks = [];
-    const PASSWORD = "art@4231";
+    const PASSWORD = "art@4231"; 
 
-    //  الباسورد
-    const modalBg = document.getElementById('modalBg');
-    const modalPass = document.getElementById('modalPass');
-    const modalErr = document.getElementById('modalErr');
+    // Modal logic
+    function openModal() {
+      document.getElementById("modalBg").classList.add("active");
+      document.getElementById("modalPw").value = "";
+      document.getElementById("modalErr").textContent = "";
+      setTimeout(()=>{ document.getElementById("modalPw").focus(); }, 200);
+    }
+    function closeModal() {
+      document.getElementById("modalBg").classList.remove("active");
+    }
+    function submitModalPw() {
+      const pw = document.getElementById("modalPw").value.trim();
+      if (pw === PASSWORD) {
+        isAuthorized = true;
+        document.getElementById("lockBtn").classList.add("unlocked");
+        closeModal();
+        alert("تم تفعيل صلاحية التعديل!");
+        renderTasks(latestTasks);
+      } else {
+        document.getElementById("modalErr").textContent = "كلمة السر غير صحيحة!";
+      }
+    }
     document.getElementById('lockBtn').onclick = function(e) {
       e.preventDefault();
       if (isAuthorized) {
         alert("أنت بالفعل في وضع المسؤول.");
         return;
       }
-      modalBg.classList.add('show');
-      modalPass.value = '';
-      modalErr.innerText = '';
-      setTimeout(()=>{modalPass.focus();},100);
+      openModal();
     };
-    function hideModal(e) {
-      if (e && (e.target === modalBg)) modalBg.classList.remove('show');
-    }
-    function submitPassword() {
-      if (modalPass.value === PASSWORD) {
-        isAuthorized = true;
-        document.getElementById("lockBtn").classList.add("unlocked");
-        modalBg.classList.remove('show');
-        renderTasks(latestTasks);
-      } else {
-        modalErr.innerText = "كلمة السر غير صحيحة!";
-        modalPass.value = '';
-        modalPass.focus();
-      }
-    }
-    window.hideModal = hideModal;
-    window.submitPassword = submitPassword;
-    modalPass.addEventListener('keydown', function(e) {
-      if (e.key === "Enter") submitPassword();
+    document.getElementById('modalPw').addEventListener('keydown', function(e){
+      if(e.key === "Enter"){ submitModalPw(); }
     });
 
     document.getElementById('addTaskForm').onsubmit = async function(e) {
@@ -293,7 +294,7 @@
       const tbody2 = document.getElementById('taskList');
       tbody2.innerHTML = '';
       tasks.forEach(task => {
-        let assigneeSelect = `<select onchange="window.checkAssign('${task.id}', this)" style="font-size:14px;border-radius:6px;padding:3px; font-family:'Cairo',Tahoma,Arial,sans-serif;" ${isAuthorized ? "" : "disabled"}>`;
+        let assigneeSelect = `<select onchange="checkAssign('${task.id}', this)" style="font-size:14px;border-radius:6px;padding:3px; font-family:'Cairo',Tahoma,Arial,sans-serif;" ${isAuthorized ? "" : "disabled"}>`;
         assigneeOptions.forEach(opt => {
           assigneeSelect += `<option${task.assignee===opt?' selected':''}>${opt}</option>`;
         });
@@ -309,12 +310,12 @@
             <td class="controls">
               ${isAuthorized 
                 ? `
-                  <button class="done-btn" onclick="window.markDone('${task.id}')">${task.status === 'منجزة' ? '✔️' : 'إنهاء'}</button>
-                  <button class="del-btn" onclick="window.delTask('${task.id}')">حذف</button>
+                  <button class="done-btn" onclick="markDone('${task.id}')">${task.status === 'منجزة' ? '✔️' : 'إنهاء'}</button>
+                  <button class="del-btn" onclick="delTask('${task.id}')">حذف</button>
                 `
                 : `
-                  <button class="done-btn" onclick="window.showModal()">Done</button>
-                  <button class="del-btn" onclick="window.showModal()">Delete</button>
+                  <button class="done-btn" onclick="openModal()">Done</button>
+                  <button class="del-btn" onclick="openModal()">Delete</button>
                 `
               }
             </td>
@@ -322,43 +323,44 @@
         `;
       });
     }
-    window.showModal = function() {
+
+    function checkAssign(id, selectElem) {
       if (!isAuthorized) {
-        modalBg.classList.add('show');
-        modalPass.value = '';
-        modalErr.innerText = '';
-        setTimeout(()=>{modalPass.focus();},100);
-      }
-    }
-    window.checkAssign = function(id, selectElem) {
-      if (!isAuthorized) {
-        window.showModal();
+        openModal();
         selectElem.value = ""; 
         return;
       }
-      window.updateAssignee(id, selectElem.value);
+      updateAssignee(id, selectElem.value);
     }
+
     db.collection('tasks').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
       const tasks = [];
       snapshot.forEach(doc => tasks.push({ ...doc.data(), id: doc.id }));
       renderTasks(tasks);
     });
 
-    window.markDone = function(id) {
+    function markDone(id) {
       db.collection('tasks').doc(id).update({ status: 'منجزة' });
     }
-    window.delTask = function(id) {
+    function delTask(id) {
       if (!isAuthorized) {
-        window.showModal();
+        openModal();
         return;
       }
       if (confirm('هل أنت متأكد من حذف الطلب؟')) {
         db.collection('tasks').doc(id).delete();
       }
     }
-    window.updateAssignee = function(id, val) {
+    function updateAssignee(id, val) {
       db.collection('tasks').doc(id).update({ assignee: val });
     }
+    window.markDone = markDone;
+    window.delTask = delTask;
+    window.checkAssign = checkAssign;
+    window.updateAssignee = updateAssignee;
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.submitModalPw = submitModalPw;
   </script>
 </body>
 </html>
