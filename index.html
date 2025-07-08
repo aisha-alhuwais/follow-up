@@ -305,14 +305,15 @@
       tbody2.innerHTML = '';
       tasks.forEach(task => {
         let emailIcon = '';
-        if (task.assignee && assigneeEmails[task.assignee]) {
-          const subject = encodeURIComponent("طلب صيانة جديد");
-          const body = encodeURIComponent(
-            `المبنى: ${task.building}\nالدور: ${task.floor}\nالفصل: ${task.classroom}\nالمشكلة: ${task.problem}`
-          );
-          const mailto = `mailto:${assigneeEmails[task.assignee]}?subject=${subject}&body=${body}`;
-          emailIcon = `<a href="${mailto}" title="إرسال بريد إلكتروني" style="margin-left:5px; font-size:19px; vertical-align:middle;">✉️</a>`;
-        }
+      if (isAuthorized && task.assignee && assigneeEmails[task.assignee]) {
+  const subject = encodeURIComponent("طلب صيانة جديد");
+  const body = encodeURIComponent(
+    `المبنى: ${task.building}\nالدور: ${task.floor}\nالفصل: ${task.classroom}\nالمشكلة: ${task.problem}`
+  );
+  const mailto = `mailto:${assigneeEmails[task.assignee]}?subject=${subject}&body=${body}`;
+  emailIcon = `<a href="${mailto}" title="إرسال بريد إلكتروني" style="margin-left:5px; font-size:19px; vertical-align:middle;">✉️</a>`;
+}
+
 
         let assigneeSelect = `<select onchange="checkAssign('${task.id}', this)" style="font-size:14px;border-radius:6px;padding:3px; font-family:'Cairo',Tahoma,Arial,sans-serif;" ${isAuthorized ? "" : "disabled"}>`;
         assigneeOptions.forEach(opt => {
