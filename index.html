@@ -5,9 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>وحدة تكنولوجيات المعلومات</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-  <!-- Firebase App (core) -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <!-- Firestore -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
     body { font-family: 'Cairo', Tahoma, Arial, sans-serif; background: #f8fafc; margin: 0; padding: 0; }
@@ -58,7 +57,10 @@
     }
     .lock-btn svg { width: 27px; height: 27px; vertical-align: middle; }
     .lock-btn.unlocked svg { filter: drop-shadow(0 0 3px #10b981) brightness(1.4); }
-    /* Modal Password */
+    .unlock-btn {
+      background: none; border: none; cursor: pointer; color: #1e293b;
+      font-size: 20px; margin-right: 4px; vertical-align: middle;
+    }
     .modal-bg {
       display: none;
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -173,6 +175,7 @@
       <button id="lockBtn" class="lock-btn" title="Password" type="button">
         <svg viewBox="0 0 24 24" fill="none"><path d="M17 11V7A5 5 0 0 0 7 7v4M5 11h14v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7Zm7 3v2" stroke="#1e293b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
+      <button onclick="logoutAdmin()" class="unlock-btn" title="إغلاق القفل">🔓</button>
     </h2>
     <table>
       <thead>
@@ -190,7 +193,6 @@
     </table>
   </div>
 
-  <!-- Modal Password -->
   <div class="modal-bg" id="modalBg">
     <div class="modal-box" dir="rtl" style="position:relative;">
       <button class="modal-close" onclick="closeModal()">&times;</button>
@@ -214,7 +216,6 @@
       "مريم العلي": "aishah.alhuwais@ku.edu.kw"
     };
 
-    // تهيئة Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyDqMFfWwtzXInusoxsJxgEO5_ptz_fRk6E",
       authDomain: "itu-coa.firebaseapp.com",
@@ -233,9 +234,15 @@
 
     let isAuthorized = false;
     let latestTasks = [];
-    const PASSWORD = "art@4231"; 
+    const PASSWORD = "art@4231";
 
-    // Modal logic
+    if (localStorage.getItem('isAuthorized') === '1') {
+      isAuthorized = true;
+      window.addEventListener('DOMContentLoaded', ()=>{
+        document.getElementById("lockBtn").classList.add("unlocked");
+      });
+    }
+
     function openModal() {
       document.getElementById("modalBg").classList.add("active");
       document.getElementById("modalPw").value = "";
@@ -249,6 +256,7 @@
       const pw = document.getElementById("modalPw").value.trim();
       if (pw === PASSWORD) {
         isAuthorized = true;
+        localStorage.setItem('isAuthorized', '1');
         document.getElementById("lockBtn").classList.add("unlocked");
         closeModal();
         alert("تم تفعيل صلاحية التعديل!");
@@ -257,6 +265,14 @@
         document.getElementById("modalErr").textContent = "كلمة السر غير صحيحة!";
       }
     }
+    function logoutAdmin() {
+      isAuthorized = false;
+      localStorage.removeItem('isAuthorized');
+      document.getElementById("lockBtn").classList.remove("unlocked");
+      renderTasks(latestTasks);
+    }
+    window.logoutAdmin = logoutAdmin;
+
     document.getElementById('lockBtn').onclick = function(e) {
       e.preventDefault();
       if (isAuthorized) {
@@ -305,15 +321,14 @@
       tbody2.innerHTML = '';
       tasks.forEach(task => {
         let emailIcon = '';
-      if (isAuthorized && task.assignee && assigneeEmails[task.assignee]) {
-  const subject = encodeURIComponent("طلب صيانة جديد");
-  const body = encodeURIComponent(
-    `المبنى: ${task.building}\nالدور: ${task.floor}\nالفصل: ${task.classroom}\nالمشكلة: ${task.problem}`
-  );
-  const mailto = `mailto:${assigneeEmails[task.assignee]}?subject=${subject}&body=${body}`;
-  emailIcon = `<a href="${mailto}" title="إرسال بريد إلكتروني" style="margin-left:5px; font-size:19px; vertical-align:middle;">✉️</a>`;
-}
-
+        if (isAuthorized && task.assignee && assigneeEmails[task.assignee]) {
+          const subject = encodeURIComponent("طلب صيانة جديد");
+          const body = encodeURIComponent(
+            `المبنى: ${task.building}\nالدور: ${task.floor}\nالفصل: ${task.classroom}\nالمشكلة: ${task.problem}`
+          );
+          const mailto = `mailto:${assigneeEmails[task.assignee]}?subject=${subject}&body=${body}`;
+          emailIcon = `<a href="${mailto}" title="إرسال بريد إلكتروني" style="margin-left:5px; font-size:19px; vertical-align:middle;">✉️</a>`;
+        }
 
         let assigneeSelect = `<select onchange="checkAssign('${task.id}', this)" style="font-size:14px;border-radius:6px;padding:3px; font-family:'Cairo',Tahoma,Arial,sans-serif;" ${isAuthorized ? "" : "disabled"}>`;
         assigneeOptions.forEach(opt => {
@@ -330,17 +345,16 @@
             <td>${assigneeSelect}</td>
             <td><span class="status ${task.status === 'منجزة' ? 'done' : 'todo'}">${task.status}</span></td>
             <td class="controls">
-  ${isAuthorized 
-    ? `
-      <button class="done-btn" onclick="markDone('${task.id}')">${task.status === 'منجزة' ? '✔️' : 'إنهاء'}</button>
-      <button class="del-btn" onclick="delTask('${task.id}')">حذف</button>
-    `
-    : `
-      <span style="color:#888;font-size:13px;">غير متاح</span>
-    `
-  }
-</td>
-
+              ${isAuthorized 
+                ? `
+                  <button class="done-btn" onclick="markDone('${task.id}')">${task.status === 'منجزة' ? '✔️' : 'إنهاء'}</button>
+                  <button class="del-btn" onclick="delTask('${task.id}')">حذف</button>
+                `
+                : `
+                  <span style="color:#888;font-size:13px;">غير متاح</span>
+                `
+              }
+            </td>
           </tr>
         `;
       });
