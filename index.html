@@ -258,17 +258,8 @@
     
     let isAuthorized = false;
     let latestTasks = [];
-    const PASSWORD = "art@4231"; 
-    
-    function delTask(id) {
-      if (!isAuthorized) {
-    openModal();
-    return;
-      }
-     if (confirm('هل أنت متأكد من حذف الطلب؟')) {
-    db.collection('tasks').doc(id).delete();
-       }
-    }
+    const PASSWORD = "art@4231";
+
     function openModal() {
       document.getElementById("modalBg").classList.add("active");
       document.getElementById("modalPw").value = "";
@@ -477,10 +468,19 @@ window.logoutAdmin = logoutAdmin;
   function updateDelegate(id, val) {
     db.collection('tasks').doc(id).update({ delegate: val });
   }
+      function delTask(id) {
+      if (!isAuthorized) {
+    openModal();
+    return;
+      }
+     if (confirm('هل أنت متأكد من حذف الطلب؟')) {
+    db.collection('tasks').doc(id).delete();
+       }
+    }
+  window.delTask = delTask;
   window.updateAssignee = updateAssignee;
   window.updateDelegate = updateDelegate;
   window.markDone = markDone;
-  window.delTask = delTask;
 
   </script>
 </body>
