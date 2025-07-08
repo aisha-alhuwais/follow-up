@@ -177,35 +177,29 @@
   </div>
   
   <!-- متابعة الطلبات -->
-  <div class="container">
-    <h2>
-        <h2>
-  متابعة الطلب
-  <button id="lockBtn" class="lock-btn" title="Password" type="button">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M17 11V7A5 5 0 0 0 7 7v4M5 11h14v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7Zm7 3v2" stroke="#1e293b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  </button>
-  <button onclick="logoutAdmin()" class="unlock-btn" title="إغلاق القفل" style="font-size:20px;vertical-align:middle;background:none;border:none;cursor:pointer;color:#1e293b;">🔓</button>
-</h2>
-    
-      <button id="lockBtn" class="lock-btn" title="Password" type="button">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M17 11V7A5 5 0 0 0 7 7v4M5 11h14v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7Zm7 3v2" stroke="#1e293b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-    </h2>
-    <table>
-      <thead>
-        <tr>
-          <th>المبنى</th>
-          <th>الدور</th>
-          <th>الفصل</th>
-          <th>المشكلة</th>
-          <th>مكلّف بها</th>
-          <th>الحالة</th>
-          <th>تحكم</th>
-        </tr>
-      </thead>
-      <tbody id="taskList"></tbody>
-    </table>
-  </div>
+ <div class="container">
+  <h2>
+    متابعة الطلب
+    <button id="lockBtn" class="lock-btn" title="Password" type="button">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M17 11V7A5 5 0 0 0 7 7v4M5 11h14v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7Zm7 3v2" stroke="#1e293b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button onclick="logoutAdmin()" class="unlock-btn" title="إغلاق القفل" style="font-size:20px;vertical-align:middle;background:none;border:none;cursor:pointer;color:#1e293b;">🔓</button>
+  </h2>
+  <table>
+    <thead>
+      <tr>
+        <th>المبنى</th>
+        <th>الدور</th>
+        <th>الفصل</th>
+        <th>المشكلة</th>
+        <th>مكلّف بها</th>
+        <th>الحالة</th>
+        <th>تحكم</th>
+      </tr>
+    </thead>
+    <tbody id="taskList"></tbody>
+  </table>
+</div>
 
   <div class="modal-bg" id="modalBg">
     <div class="modal-box" dir="rtl" style="position:relative;">
@@ -250,7 +244,16 @@
     let isAuthorized = false;
     let latestTasks = [];
     const PASSWORD = "art@4231"; 
-
+    
+    function delTask(id) {
+      if (!isAuthorized) {
+    openModal();
+    return;
+      }
+     if (confirm('هل أنت متأكد من حذف الطلب؟')) {
+    db.collection('tasks').doc(id).delete();
+       }
+    }
     function openModal() {
       document.getElementById("modalBg").classList.add("active");
       document.getElementById("modalPw").value = "";
@@ -379,15 +382,7 @@ window.logoutAdmin = logoutAdmin;
     function markDone(id) {
       db.collection('tasks').doc(id).update({ status: 'منجزة' });
     }
-    function delTask(id) {
-      if (!isAuthorized) {
-        openModal();
-        return;
-      }
-      if (confirm('هل أنت متأكد من حذف الطلب؟')) {
-        db.collection('tasks').doc(id).delete();
-      }
-    }
+ 
     function updateAssignee(id, val) {
       db.collection('tasks').doc(id).update({ assignee: val });
     }
