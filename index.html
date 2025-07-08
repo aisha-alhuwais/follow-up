@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>وحدة تكنولوجيات المعلومات</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-  <!-- Firebase -->
+  <!-- Firebase App (core) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <!-- Firestore -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
     body { font-family: 'Cairo', Tahoma, Arial, sans-serif; background: #f8fafc; margin: 0; padding: 0; }
@@ -57,10 +58,7 @@
     }
     .lock-btn svg { width: 27px; height: 27px; vertical-align: middle; }
     .lock-btn.unlocked svg { filter: drop-shadow(0 0 3px #10b981) brightness(1.4); }
-    .unlock-btn {
-      background: none; border: none; cursor: pointer; color: #1e293b;
-      font-size: 20px; margin-right: 4px; vertical-align: middle;
-    }
+    /* Modal Password */
     .modal-bg {
       display: none;
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -125,6 +123,16 @@
     <form id="addTaskForm" autocomplete="off">
       <div class="form-row">
         <div class="field-box">
+          <label for="sender">اسم المرسل</label>
+          <select id="sender" required>
+            <option value="">اختر اسمك</option>
+            <option>أيمن الراشد</option>
+            <option>بدرية الصالح</option>
+            <option>عائشه الحويس</option>
+            <option>مريم العلي</option>
+          </select>
+        </div>
+        <div class="field-box">
           <label for="building">المبنى</label>
           <select id="building" required>
             <option value="">اختر المبنى</option>
@@ -136,7 +144,6 @@
           <label for="floor">الدور</label>
           <select id="floor" required>
             <option value="">الدور</option>
-            <option>G</option>
             <option>1</option>
             <option>2</option>
             <option>3</option>
@@ -159,6 +166,7 @@
     <table>
       <thead>
         <tr>
+          <th>اسم المرسل</th>
           <th>المبنى</th>
           <th>الدور</th>
           <th>الفصل</th>
@@ -176,7 +184,6 @@
       <button id="lockBtn" class="lock-btn" title="Password" type="button">
         <svg viewBox="0 0 24 24" fill="none"><path d="M17 11V7A5 5 0 0 0 7 7v4M5 11h14v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7Zm7 3v2" stroke="#1e293b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <button onclick="logoutAdmin()" class="unlock-btn" title="إغلاق القفل">🔓</button>
     </h2>
     <table>
       <thead>
@@ -236,15 +243,9 @@
 
     let isAuthorized = false;
     let latestTasks = [];
-    const PASSWORD = "art@4231";
+    const PASSWORD = "art@4231"; 
 
-    if (localStorage.getItem('isAuthorized') === '1') {
-      isAuthorized = true;
-      window.addEventListener('DOMContentLoaded', ()=>{
-        document.getElementById("lockBtn").classList.add("unlocked");
-      });
-    }
-
+    // Modal logic
     function openModal() {
       document.getElementById("modalBg").classList.add("active");
       document.getElementById("modalPw").value = "";
@@ -258,7 +259,6 @@
       const pw = document.getElementById("modalPw").value.trim();
       if (pw === PASSWORD) {
         isAuthorized = true;
-        localStorage.setItem('isAuthorized', '1');
         document.getElementById("lockBtn").classList.add("unlocked");
         closeModal();
         alert("تم تفعيل صلاحية التعديل!");
@@ -267,14 +267,6 @@
         document.getElementById("modalErr").textContent = "كلمة السر غير صحيحة!";
       }
     }
-    function logoutAdmin() {
-      isAuthorized = false;
-      localStorage.removeItem('isAuthorized');
-      document.getElementById("lockBtn").classList.remove("unlocked");
-      renderTasks(latestTasks);
-    }
-    window.logoutAdmin = logoutAdmin;
-
     document.getElementById('lockBtn').onclick = function(e) {
       e.preventDefault();
       if (isAuthorized) {
@@ -289,13 +281,14 @@
 
     document.getElementById('addTaskForm').onsubmit = async function(e) {
       e.preventDefault();
+      const sender = document.getElementById('sender').value;
       const building = document.getElementById('building').value;
       const floor = document.getElementById('floor').value;
       const classroom = document.getElementById('classroom').value.trim();
       const problem = document.getElementById('problem').value.trim();
-      if (!building || !floor || !classroom || !problem) return;
+      if (!sender || !building || !floor || !classroom || !problem) return;
       await db.collection('tasks').add({
-        building, floor, classroom, problem,
+        sender, building, floor, classroom, problem,
         assignee: "",
         status: 'قيد التنفيذ',
         timestamp: new Date()
@@ -305,12 +298,13 @@
 
     function renderTasks(tasks) {
       latestTasks = tasks;
-      // الجدول الأول
+      // إضافة طلب جديد
       const tbody1 = document.getElementById('addedTasks');
       tbody1.innerHTML = '';
       tasks.forEach(task => {
         tbody1.innerHTML += `
           <tr>
+            <td>${task.sender || ""}</td>
             <td>${task.building}</td>
             <td>${task.floor}</td>
             <td>${task.classroom}</td>
@@ -331,7 +325,6 @@
           const mailto = `mailto:${assigneeEmails[task.assignee]}?subject=${subject}&body=${body}`;
           emailIcon = `<a href="${mailto}" title="إرسال بريد إلكتروني" style="margin-left:5px; font-size:19px; vertical-align:middle;">✉️</a>`;
         }
-
         let assigneeSelect = `<select onchange="checkAssign('${task.id}', this)" style="font-size:14px;border-radius:6px;padding:3px; font-family:'Cairo',Tahoma,Arial,sans-serif;" ${isAuthorized ? "" : "disabled"}>`;
         assigneeOptions.forEach(opt => {
           assigneeSelect += `<option${task.assignee===opt?' selected':''}>${opt}</option>`;
@@ -352,9 +345,7 @@
                   <button class="done-btn" onclick="markDone('${task.id}')">${task.status === 'منجزة' ? '✔️' : 'إنهاء'}</button>
                   <button class="del-btn" onclick="delTask('${task.id}')">حذف</button>
                 `
-                : `
-                  <span style="color:#888;font-size:13px;">غير متاح</span>
-                `
+                : `<span style="color:#888;font-size:13px;">غير متاح</span>`
               }
             </td>
           </tr>
