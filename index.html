@@ -193,6 +193,7 @@
         <th>الفصل</th>
         <th>المشكلة</th>
         <th>مكلّف بها</th>
+         <th>تفويض إلى</th>
         <th>الحالة</th>
         <th>تحكم</th>
       </tr>
@@ -224,7 +225,16 @@
       "ارافيند موهان": "ad.mn@ku.edu.kw",
       "مريم العلي": "m.alali@ku.edu.kw"
     };
-
+    const assigneeWhatsapp = {
+  "عائشه الحويس": "96599095985",
+  "محمد وهبة": "96599534433",
+  "شيخة الغريب": "96594949417",
+  "دلال العتيبي": "96555779703",
+  "نورية سالم": "96566150708",
+  "غنيمة بشاره": "96566600434",
+  "ارافيند موهان": "96597775702",
+  "مريم العلي": "96565551239"
+};
     const firebaseConfig = {
       apiKey: "AIzaSyDqMFfWwtzXInusoxsJxgEO5_ptz_fRk6E",
       authDomain: "itu-coa.firebaseapp.com",
@@ -240,7 +250,10 @@
     const assigneeOptions = [
       "", "عائشه الحويس","محمد وهبة", "شيخة الغريب", "دلال العتيبي", "نورية سالم", "غنيمة بشاره", "ارافيند موهان", "مريم العلي"
     ];
-
+     const delegateOptions = [
+    "", "محمد وهبة", "موهان",
+  ];
+    
     let isAuthorized = false;
     let latestTasks = [];
     const PASSWORD = "art@4231"; 
@@ -306,63 +319,84 @@
       });
       this.reset();
     };
-
     function renderTasks(tasks) {
-      latestTasks = tasks;
-      // إضافة طلب جديد
-      const tbody1 = document.getElementById('addedTasks');
-      tbody1.innerHTML = '';
-      tasks.forEach(task => {
-        tbody1.innerHTML += `
-          <tr>
-            <td>${task.sender || ""}</td>
-            <td>${task.building}</td>
-            <td>${task.floor}</td>
-            <td>${task.classroom}</td>
-            <td>${task.problem}</td>
-          </tr>
-        `;
-      });
-      // الجدول الثاني
-      const tbody2 = document.getElementById('taskList');
-      tbody2.innerHTML = '';
-      tasks.forEach(task => {
-        let emailIcon = '';
-        if (isAuthorized && task.assignee && assigneeEmails[task.assignee]) {
-          const subject = encodeURIComponent("طلب صيانة جديد");
-          const body = encodeURIComponent(
-            `المبنى: ${task.building}\nالدور: ${task.floor}\nالفصل: ${task.classroom}\nالمشكلة: ${task.problem}`
-          );
-          const mailto = `mailto:${assigneeEmails[task.assignee]}?subject=${subject}&body=${body}`;
-          emailIcon = `<a href="${mailto}" title="إرسال بريد إلكتروني" style="margin-left:5px; font-size:19px; vertical-align:middle;">✉️</a>`;
-        }
-        let assigneeSelect = `<select onchange="checkAssign('${task.id}', this)" style="font-size:14px;border-radius:6px;padding:3px; font-family:'Cairo',Tahoma,Arial,sans-serif;" ${isAuthorized ? "" : "disabled"}>`;
-        assigneeOptions.forEach(opt => {
-          assigneeSelect += `<option${task.assignee===opt?' selected':''}>${opt}</option>`;
-        });
-        assigneeSelect += `</select>${emailIcon}`;
+  latestTasks = tasks;
+  const tbody1 = document.getElementById('addedTasks');
+  tbody1.innerHTML = '';
+  tasks.forEach(task => {
+    tbody1.innerHTML += `
+      <tr>
+        <td>${task.sender || ""}</td>
+        <td>${task.building}</td>
+        <td>${task.floor}</td>
+        <td>${task.classroom}</td>
+        <td>${task.problem}</td>
+      </tr>
+    `;
+  });
 
-        tbody2.innerHTML += `
-          <tr>
-            <td>${task.building}</td>
-            <td>${task.floor}</td>
-            <td>${task.classroom}</td>
-            <td>${task.problem}</td>
-            <td>${assigneeSelect}</td>
-            <td><span class="status ${task.status === 'منجزة' ? 'done' : 'todo'}">${task.status}</span></td>
-            <td class="controls">
-              ${isAuthorized 
-                ? `
-                  <button class="done-btn" onclick="markDone('${task.id}')">${task.status === 'منجزة' ? '✔️' : 'إنهاء'}</button>
-                  <button class="del-btn" onclick="delTask('${task.id}')">حذف</button>
-                `
-                : `<span style="color:#888;font-size:13px;">غير متاح</span>`
-              }
-            </td>
-          </tr>
-        `;
-      });
+  const tbody2 = document.getElementById('taskList');
+  tbody2.innerHTML = '';
+  tasks.forEach(task => {
+    let whatsappIcon = '';
+    if (isAuthorized && task.assignee && assigneeWhatsapp[task.assignee]) {
+      const message = encodeURIComponent(
+        `السلام عليكم ورحمة الله وبركاته،
+
+تم تكليفك بمعالجة طلب صيانة جديد:
+
+المبنى: ${task.building}
+الدور: ${task.floor}
+الفصل/المكتب: ${task.classroom}
+المشكلة: ${task.problem}
+
+يرجى التفضل باتخاذ اللازم في أقرب وقت ممكن، مع التكرم بإفادتنا بما تم اتخاذه من إجراءات.
+
+شاكره لكم حسن تعاونكم
+وتفضلوا بقبول فائق الاحترام والتقدير،
+ 
+ وحدة تكنولوجيا المعلومات `
+      );
+      const waNum = assigneeWhatsapp[task.assignee];
+      whatsappIcon = `<a href="https://wa.me/${waNum}?text=${message}" target="_blank" title="إرسال عبر واتساب" style="margin-right:2px;vertical-align:middle;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:23px;height:23px;">
+      </a>`;
     }
+
+    let assigneeSelect = `<select onchange="checkAssign('${task.id}', this)" style="font-size:14px;border-radius:6px;padding:3px; font-family:'Cairo',Tahoma,Arial,sans-serif;" ${isAuthorized ? "" : "disabled"}>`;
+    assigneeOptions.forEach(opt => {
+      assigneeSelect += `<option${task.assignee===opt?' selected':''}>${opt}</option>`;
+    });
+    assigneeSelect += `</select>${whatsappIcon}`;
+
+    let delegateSelect = `<select onchange="updateDelegate('${task.id}', this.value)" style="font-size:14px;border-radius:6px;padding:3px;">`;
+    delegateOptions.forEach(opt => {
+      delegateSelect += `<option${task.delegate===opt?' selected':''}>${opt}</option>`;
+    });
+    delegateSelect += `</select>`;
+
+    tbody2.innerHTML += `
+      <tr>
+        <td>${task.building}</td>
+        <td>${task.floor}</td>
+        <td>${task.classroom}</td>
+        <td>${task.problem}</td>
+        <td>${assigneeSelect}</td>
+        <td>${delegateSelect}</td>
+        <td><span class="status ${task.status === 'منجزة' ? 'done' : 'todo'}">${task.status}</span></td>
+        <td class="controls">
+          ${isAuthorized 
+            ? `
+              <button class="done-btn" onclick="markDone('${task.id}')">${task.status === 'منجزة' ? '✔️' : 'إنهاء'}</button>
+              <button class="del-btn" onclick="delTask('${task.id}')">حذف</button>
+            `
+            : `<span style="color:#888;font-size:13px;">غير متاح</span>`
+          }
+        </td>
+      </tr>
+    `;
+  });
+}
 
     function checkAssign(id, selectElem) {
       if (!isAuthorized) {
@@ -396,6 +430,18 @@ window.logoutAdmin = logoutAdmin;
       snapshot.forEach(doc => tasks.push({ ...doc.data(), id: doc.id }));
       renderTasks(tasks);
     });
+    //  مكلّف بها
+  function updateAssignee(id, val) {
+    db.collection('tasks').doc(id).update({ assignee: val });
+  }
+  //  التفويض
+  function updateDelegate(id, val) {
+    db.collection('tasks').doc(id).update({ delegate: val });
+  }
+  window.updateAssignee = updateAssignee;
+  window.updateDelegate = updateDelegate;
+  window.markDone = markDone;
+  window.delTask = delTask;
   </script>
 </body>
 </html>
