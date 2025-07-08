@@ -330,17 +330,17 @@
             <td>${assigneeSelect}</td>
             <td><span class="status ${task.status === 'منجزة' ? 'done' : 'todo'}">${task.status}</span></td>
             <td class="controls">
-              ${isAuthorized 
-                ? `
-                  <button class="done-btn" onclick="markDone('${task.id}')">${task.status === 'منجزة' ? '✔️' : 'إنهاء'}</button>
-                  <button class="del-btn" onclick="delTask('${task.id}')">حذف</button>
-                `
-                : `
-                  <button class="done-btn" onclick="openModal()">Done</button>
-                  <button class="del-btn" onclick="openModal()">Delete</button>
-                `
-              }
-            </td>
+  ${isAuthorized 
+    ? `
+      <button class="done-btn" onclick="markDone('${task.id}')">${task.status === 'منجزة' ? '✔️' : 'إنهاء'}</button>
+      <button class="del-btn" onclick="delTask('${task.id}')">حذف</button>
+    `
+    : `
+      <span style="color:#888;font-size:13px;">غير متاح</span>
+    `
+  }
+</td>
+
           </tr>
         `;
       });
