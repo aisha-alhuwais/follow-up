@@ -45,23 +45,30 @@
       table, th, td { font-size: 13px; }
     }
     .field-box { display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px; }
+    .lock-row { display: flex; justify-content: flex-end; margin-bottom: 6px; }
     .lock-btn {
       background: none;
       border: none;
       cursor: pointer;
-      position: absolute;
-      left: 16px;
-      top: 7px;
-      padding: 0;
-      margin: 0;
-      transition: filter 0.15s;
+      padding: 0 3px;
+      margin: 0 0 0 6px;
+      transition: filter 0.18s;
+      outline: none;
     }
-    .lock-btn svg { width: 27px; height: 27px; vertical-align: middle; }
-    .lock-btn:hover { filter: brightness(0.5); }
-    .lock-btn.unlocked svg { filter: drop-shadow(0 0 3px #10b981) brightness(1.4); }
+    .lock-btn svg { width: 28px; height: 28px; vertical-align: middle; }
+    .lock-btn.unlocked svg { filter: drop-shadow(0 0 3px #10b981) brightness(1.5);}
+    .admin-alert {
+      color: #10b981;
+      font-size: 15px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 4px;
+      display: none;
+    }
   </style>
 </head>
 <body>
+  <!-- إضافة طلب جديد -->
   <div class="container">
     <h2>إضافة طلب جديد</h2>
     <form id="addTaskForm" autocomplete="off">
@@ -112,12 +119,13 @@
   
   <!-- متابعة الطلبات -->
   <div class="container">
-    <h2>
-      متابعة الطلب
+    <div class="lock-row">
       <button id="lockBtn" class="lock-btn" title="دخول المشرف">
         <svg viewBox="0 0 24 24" fill="none"><path d="M17 11V7A5 5 0 0 0 7 7v4M5 11h14v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7Zm7 3v2" stroke="#1e293b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-    </h2>
+    </div>
+    <div id="adminAlert" class="admin-alert">تم تفعيل صلاحية المشرف 👩‍💻</div>
+    <h2>متابعة الطلب</h2>
     <table>
       <thead>
         <tr>
@@ -155,9 +163,8 @@
 
     let isAuthorized = false;
     let latestTasks = [];
-    const PASSWORD = "art@4231"; 
+    const PASSWORD = "210113871"; 
 
-    // زر القفل (المشرف)
     document.getElementById('lockBtn').onclick = function(e) {
       e.preventDefault();
       if (isAuthorized) {
@@ -168,13 +175,15 @@
       if (pw === PASSWORD) {
         isAuthorized = true;
         this.classList.add("unlocked");
-        alert("تم تفعيل الصلاحية !");
+        document.getElementById("adminAlert").style.display = "block";
+        setTimeout(() => { document.getElementById("adminAlert").style.display = "none"; }, 3000);
         renderTasks(latestTasks);
       } else {
         alert("كلمة السر غير صحيحة!");
       }
     };
 
+    // إضافة طلب جديد
     document.getElementById('addTaskForm').onsubmit = async function(e) {
       e.preventDefault();
       const building = document.getElementById('building').value;
@@ -210,7 +219,7 @@
       const tbody2 = document.getElementById('taskList');
       tbody2.innerHTML = '';
       tasks.forEach(task => {
-        let assigneeSelect = `<select onchange="checkAssign('${task.id}', this)" style="font-size:14px;border-radius:6px;padding:3px; font-family:'Cairo',Tahoma,Arial,sans-serif;" ${isAuthorized ? "" : "disabled"}>`;
+        let assigneeSelect = `<select onchange="window.checkAssign('${task.id}', this)" style="font-size:14px;border-radius:6px;padding:3px; font-family:'Cairo',Tahoma,Arial,sans-serif;" ${isAuthorized ? "" : "disabled"}>`;
         assigneeOptions.forEach(opt => {
           assigneeSelect += `<option${task.assignee===opt?' selected':''}>${opt}</option>`;
         });
@@ -226,12 +235,12 @@
             <td class="controls">
               ${isAuthorized 
                 ? `
-                  <button class="done-btn" onclick="markDone('${task.id}')">${task.status === 'منجزة' ? '✔️' : 'إنهاء'}</button>
-                  <button class="del-btn" onclick="delTask('${task.id}')">حذف</button>
+                  <button class="done-btn" onclick="window.markDone('${task.id}')">${task.status === 'منجزة' ? '✔️' : 'إنهاء'}</button>
+                  <button class="del-btn" onclick="window.delTask('${task.id}')">حذف</button>
                 `
                 : `
-                  <button class="done-btn" onclick="requirePassword()">Done</button>
-                  <button class="del-btn" onclick="requirePassword()">Delete</button>
+                  <button class="done-btn" onclick="window.requirePassword()">Done</button>
+                  <button class="del-btn" onclick="window.requirePassword()">Delete</button>
                 `
               }
             </td>
@@ -240,26 +249,28 @@
       });
     }
 
-    function requirePassword() {
+    window.requirePassword = function() {
       if (!isAuthorized) {
         const pw = prompt("الرجاء إدخال كلمة السر لتفعيل التعديلات:");
         if (pw === PASSWORD) {
           isAuthorized = true;
           document.getElementById("lockBtn").classList.add("unlocked");
-          alert("تم تفعيل صلاحية التعديل!");
+          document.getElementById("adminAlert").style.display = "block";
+          setTimeout(() => { document.getElementById("adminAlert").style.display = "none"; }, 3000);
           renderTasks(latestTasks);
         } else {
           alert("كلمة السر غير صحيحة!");
         }
       }
     }
-    function checkAssign(id, selectElem) {
+
+    window.checkAssign = function(id, selectElem) {
       if (!isAuthorized) {
-        requirePassword();
+        window.requirePassword();
         selectElem.value = ""; 
         return;
       }
-      updateAssignee(id, selectElem.value);
+      window.updateAssignee(id, selectElem.value);
     }
 
     db.collection('tasks').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
@@ -268,26 +279,21 @@
       renderTasks(tasks);
     });
 
-    function markDone(id) {
+    window.markDone = function(id) {
       db.collection('tasks').doc(id).update({ status: 'منجزة' });
     }
-    function delTask(id) {
+    window.delTask = function(id) {
       if (!isAuthorized) {
-        requirePassword();
+        window.requirePassword();
         return;
       }
       if (confirm('هل أنت متأكد من حذف الطلب؟')) {
         db.collection('tasks').doc(id).delete();
       }
     }
-    function updateAssignee(id, val) {
+    window.updateAssignee = function(id, val) {
       db.collection('tasks').doc(id).update({ assignee: val });
     }
-    window.markDone = markDone;
-    window.delTask = delTask;
-    window.requirePassword = requirePassword;
-    window.checkAssign = checkAssign;
-    window.updateAssignee = updateAssignee;
   </script>
 </body>
 </html>
