@@ -12,7 +12,7 @@
   <style>
     body { font-family: 'Cairo', Tahoma, Arial, sans-serif; background: #f8fafc; margin: 0; padding: 0; }
     .container { max-width: 850px; margin: 28px auto; background: #fff; border-radius: 16px; box-shadow: 0 2px 8px #0001; padding: 20px 14px; }
-    h2 { margin-bottom: 16px; color: #1e293b; text-align: center; font-family: 'Cairo', Tahoma, Arial, sans-serif; }
+    h2 { margin-bottom: 16px; color: #1e293b; text-align: center; font-family: 'Cairo', Tahoma, Arial, sans-serif; position: relative; }
     .form-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 0; }
     .form-row > * { flex: 1 1 130px; min-width: 110px; font-family: 'Cairo', Tahoma, Arial, sans-serif; }
     .add-btn-row { margin: 14px 0 18px 0; display: flex; justify-content: stretch; }
@@ -45,10 +45,23 @@
       table, th, td { font-size: 13px; }
     }
     .field-box { display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px; }
+    .lock-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      position: absolute;
+      left: 16px;
+      top: 7px;
+      padding: 0;
+      margin: 0;
+      transition: filter 0.15s;
+    }
+    .lock-btn svg { width: 27px; height: 27px; vertical-align: middle; }
+    .lock-btn:hover { filter: brightness(0.5); }
+    .lock-btn.unlocked svg { filter: drop-shadow(0 0 3px #10b981) brightness(1.4); }
   </style>
 </head>
 <body>
-  <!-- إضافة طلب جديد -->
   <div class="container">
     <h2>إضافة طلب جديد</h2>
     <form id="addTaskForm" autocomplete="off">
@@ -99,7 +112,12 @@
   
   <!-- متابعة الطلبات -->
   <div class="container">
-    <h2>متابعة الطلب</h2>
+    <h2>
+      متابعة الطلب
+      <button id="lockBtn" class="lock-btn" title="دخول المشرف">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M17 11V7A5 5 0 0 0 7 7v4M5 11h14v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7Zm7 3v2" stroke="#1e293b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </h2>
     <table>
       <thead>
         <tr>
@@ -137,9 +155,26 @@
 
     let isAuthorized = false;
     let latestTasks = [];
-    const PASSWORD = "210113871"; 
+    const PASSWORD = "art@4231"; 
 
-    // إضافة طلب جديد
+    // زر القفل (المشرف)
+    document.getElementById('lockBtn').onclick = function(e) {
+      e.preventDefault();
+      if (isAuthorized) {
+        alert("أنت بالفعل في وضع المسؤول.");
+        return;
+      }
+      const pw = prompt("أدخل كلمة السر :");
+      if (pw === PASSWORD) {
+        isAuthorized = true;
+        this.classList.add("unlocked");
+        alert("تم تفعيل الصلاحية !");
+        renderTasks(latestTasks);
+      } else {
+        alert("كلمة السر غير صحيحة!");
+      }
+    };
+
     document.getElementById('addTaskForm').onsubmit = async function(e) {
       e.preventDefault();
       const building = document.getElementById('building').value;
@@ -171,6 +206,7 @@
           </tr>
         `;
       });
+      // الجدول الثاني
       const tbody2 = document.getElementById('taskList');
       tbody2.innerHTML = '';
       tasks.forEach(task => {
@@ -209,6 +245,7 @@
         const pw = prompt("الرجاء إدخال كلمة السر لتفعيل التعديلات:");
         if (pw === PASSWORD) {
           isAuthorized = true;
+          document.getElementById("lockBtn").classList.add("unlocked");
           alert("تم تفعيل صلاحية التعديل!");
           renderTasks(latestTasks);
         } else {
