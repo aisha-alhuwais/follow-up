@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>وحدة تكنولوجيات المعلومات</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
-  <!-- Firebase -->
+  <!-- Firebase  -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
@@ -57,25 +57,61 @@
     }
     .lock-btn svg { width: 27px; height: 27px; vertical-align: middle; }
     .lock-btn.unlocked svg { filter: drop-shadow(0 0 3px #10b981) brightness(1.4); }
-    .unlock-btn {
-      background: none; border: none; cursor: pointer; color: #1e293b;
-      font-size: 20px; margin-right: 4px; vertical-align: middle;
-    }
-    /* Modal styles */
     .modal-bg {
       display: none;
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.35);
-      z-index: 99999;
+      background: rgba(0,0,0,0.27);
+      z-index: 9999;
       align-items: center;
       justify-content: center;
     }
     .modal-bg.active { display: flex; }
-    .modal-box { background: #fff; border-radius: 16px; box-shadow: 0 2px 16px #0006; padding: 28px 18px 22px 18px; max-width: 340px; width: 96vw; text-align: center; font-family: 'Cairo', Tahoma, Arial, sans-serif;}
-    .modal-box input[type="password"] { padding: 10px; border-radius: 8px; border: 1px solid #d1d5db; font-size: 16px; margin-top: 8px; width: 90%; font-family: 'Cairo', Tahoma, Arial, sans-serif; text-align: center; letter-spacing: 2px; margin-bottom: 14px;}
-    .modal-box button { padding: 8px 26px; border-radius: 8px; border: none; background: #2563eb; color: #fff; font-size: 16px; font-family: 'Cairo', Tahoma, Arial, sans-serif; font-weight: 700; cursor: pointer; transition: background 0.2s; margin-top: 5px;}
+    .modal-box {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 16px #0003;
+      padding: 28px 18px 22px 18px;
+      max-width: 340px;
+      width: 96vw;
+      text-align: center;
+      font-family: 'Cairo', Tahoma, Arial, sans-serif;
+    }
+    .modal-box input[type="password"] {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 16px;
+      margin-top: 8px;
+      width: 90%;
+      font-family: 'Cairo', Tahoma, Arial, sans-serif;
+      text-align: center;
+      letter-spacing: 2px;
+      margin-bottom: 14px;
+    }
+    .modal-box button {
+      padding: 8px 26px;
+      border-radius: 8px;
+      border: none;
+      background: #2563eb;
+      color: #fff;
+      font-size: 16px;
+      font-family: 'Cairo', Tahoma, Arial, sans-serif;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 5px;
+    }
     .modal-box button:hover { background: #1d4ed8; }
-    .modal-close { background: none; border: none; color: #888; position: absolute; top: 13px; right: 19px; font-size: 23px; cursor: pointer;}
+    .modal-close {
+      background: none;
+      border: none;
+      color: #888;
+      position: absolute;
+      top: 13px;
+      right: 19px;
+      font-size: 23px;
+      cursor: pointer;
+    }
     .modal-err { color: #ef4444; font-size: 15px; min-height: 23px; margin-bottom: 2px;}
   </style>
 </head>
@@ -143,11 +179,17 @@
   <!-- متابعة الطلبات -->
   <div class="container">
     <h2>
-      متابعة الطلب
+        <h2>
+  متابعة الطلب
+  <button id="lockBtn" class="lock-btn" title="Password" type="button">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M17 11V7A5 5 0 0 0 7 7v4M5 11h14v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7Zm7 3v2" stroke="#1e293b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <button onclick="logoutAdmin()" class="unlock-btn" title="إغلاق القفل" style="font-size:20px;vertical-align:middle;background:none;border:none;cursor:pointer;color:#1e293b;">🔓</button>
+</h2>
+    
       <button id="lockBtn" class="lock-btn" title="Password" type="button">
         <svg viewBox="0 0 24 24" fill="none"><path d="M17 11V7A5 5 0 0 0 7 7v4M5 11h14v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7Zm7 3v2" stroke="#1e293b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
-      <button onclick="logoutAdmin()" class="unlock-btn" title="إغلاق القفل">🔓</button>
     </h2>
     <table>
       <thead>
@@ -176,6 +218,7 @@
     </div>
   </div>
 
+  <!-- Firebase Config & JS -->
   <script>
     const assigneeEmails = {
       "عائشه الحويس": "aishah.alhuwais@ku.edu.kw",
@@ -201,19 +244,12 @@
     const db = firebase.firestore();
 
     const assigneeOptions = [
-      "", "محمد وهبة", "شيخة الغريب", "دلال العتيبي", "نورية سالم", "غنيمة بشاره", "عائشه الحويس","مريم العلي","ارافيند موهان"
+      "", "عائشه الحويس","محمد وهبة", "شيخة الغريب", "دلال العتيبي", "نورية سالم", "غنيمة بشاره", "ارافيند موهان", "مريم العلي"
     ];
 
     let isAuthorized = false;
     let latestTasks = [];
-    const PASSWORD = "art@4231";
-
-    if (localStorage.getItem('isAuthorized') === '1') {
-      isAuthorized = true;
-      window.addEventListener('DOMContentLoaded', ()=>{
-        document.getElementById("lockBtn").classList.add("unlocked");
-      });
-    }
+    const PASSWORD = "art@4231"; 
 
     function openModal() {
       document.getElementById("modalBg").classList.add("active");
@@ -228,22 +264,16 @@
       const pw = document.getElementById("modalPw").value.trim();
       if (pw === PASSWORD) {
         isAuthorized = true;
-        localStorage.setItem('isAuthorized', '1');
         document.getElementById("lockBtn").classList.add("unlocked");
         closeModal();
-        alert("تم تفعيل صلاحية التعديل!");
         renderTasks(latestTasks);
       } else {
         document.getElementById("modalErr").textContent = "كلمة السر غير صحيحة!";
       }
     }
-    function logoutAdmin() {
-      isAuthorized = false;
-      localStorage.removeItem('isAuthorized');
-      document.getElementById("lockBtn").classList.remove("unlocked");
-      renderTasks(latestTasks);
-    }
-    window.logoutAdmin = logoutAdmin;
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.submitModalPw = submitModalPw;
 
     document.getElementById('lockBtn').onclick = function(e) {
       e.preventDefault();
@@ -276,7 +306,7 @@
 
     function renderTasks(tasks) {
       latestTasks = tasks;
-      //  إضافة طلب جديد
+      // إضافة طلب جديد
       const tbody1 = document.getElementById('addedTasks');
       tbody1.innerHTML = '';
       tasks.forEach(task => {
@@ -290,7 +320,7 @@
           </tr>
         `;
       });
-      //  متابعة الطلب 
+      // الجدول الثاني
       const tbody2 = document.getElementById('taskList');
       tbody2.innerHTML = '';
       tasks.forEach(task => {
@@ -301,13 +331,14 @@
             `المبنى: ${task.building}\nالدور: ${task.floor}\nالفصل: ${task.classroom}\nالمشكلة: ${task.problem}`
           );
           const mailto = `mailto:${assigneeEmails[task.assignee]}?subject=${subject}&body=${body}`;
-          emailIcon = `<a href="${mailto}" title="إرسال بريد إلكتروني" style="margin-left:5px; font-size:19px; vertical-align:middle;"> ✉️ </a>`;
+          emailIcon = `<a href="${mailto}" title="إرسال بريد إلكتروني" style="margin-left:5px; font-size:19px; vertical-align:middle;">✉️</a>`;
         }
         let assigneeSelect = `<select onchange="checkAssign('${task.id}', this)" style="font-size:14px;border-radius:6px;padding:3px; font-family:'Cairo',Tahoma,Arial,sans-serif;" ${isAuthorized ? "" : "disabled"}>`;
         assigneeOptions.forEach(opt => {
           assigneeSelect += `<option${task.assignee===opt?' selected':''}>${opt}</option>`;
         });
         assigneeSelect += `</select>${emailIcon}`;
+
         tbody2.innerHTML += `
           <tr>
             <td>${task.building}</td>
@@ -338,12 +369,12 @@
       }
       updateAssignee(id, selectElem.value);
     }
-
-    db.collection('tasks').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-      const tasks = [];
-      snapshot.forEach(doc => tasks.push({ ...doc.data(), id: doc.id }));
-      renderTasks(tasks);
-    });
+    function logoutAdmin() {
+  isAuthorized = false;
+  document.getElementById("lockBtn").classList.remove("unlocked");
+  renderTasks(latestTasks);
+}
+window.logoutAdmin = logoutAdmin;
 
     function markDone(id) {
       db.collection('tasks').doc(id).update({ status: 'منجزة' });
@@ -364,9 +395,12 @@
     window.delTask = delTask;
     window.checkAssign = checkAssign;
     window.updateAssignee = updateAssignee;
-    window.openModal = openModal;
-    window.closeModal = closeModal;
-    window.submitModalPw = submitModalPw;
+
+    db.collection('tasks').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+      const tasks = [];
+      snapshot.forEach(doc => tasks.push({ ...doc.data(), id: doc.id }));
+      renderTasks(tasks);
+    });
   </script>
 </body>
 </html>
