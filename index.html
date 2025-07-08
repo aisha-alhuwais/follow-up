@@ -468,16 +468,17 @@ window.logoutAdmin = logoutAdmin;
   function updateDelegate(id, val) {
     db.collection('tasks').doc(id).update({ delegate: val });
   }
-      function delTask(id) {
-      if (!isAuthorized) {
+function delTask(id) {
+  if (!isAuthorized) {
     openModal();
     return;
-      }
-     if (confirm('هل أنت متأكد من حذف الطلب؟')) {
+  }
+  if (confirm('هل أنت متأكد أنك تريد حذف هذا الطلب نهائيًا؟')) {
     db.collection('tasks').doc(id).delete();
-       }
-    }
-  window.delTask = delTask;
+  }
+}
+window.delTask = delTask;
+
   window.updateAssignee = updateAssignee;
   window.updateDelegate = updateDelegate;
   window.markDone = markDone;
