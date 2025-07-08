@@ -126,6 +126,8 @@
             <option value="">اختر اسمك</option>
             <option>أيمن الراشد</option>
             <option>بدرية الصالح</option>
+            <option>محمد وهبة</option>
+            <option>دلال العتيبي</option>
             <option>عائشه الحويس</option>
             <option>مريم العلي</option>
           </select>
@@ -251,7 +253,7 @@
       "", "عائشه الحويس","محمد وهبة", "شيخة الغريب", "دلال العتيبي", "نورية سالم", "غنيمة بشاره", "ارافيند موهان", "مريم العلي"
     ];
      const delegateOptions = [
-    "", "محمد وهبة", "موهان",
+    "", "محمد وهبة", "ارافيند موهان",
   ];
     
     let isAuthorized = false;
@@ -276,6 +278,7 @@
     function closeModal() {
       document.getElementById("modalBg").classList.remove("active");
     }
+    
     function submitModalPw() {
       const pw = document.getElementById("modalPw").value.trim();
       if (pw === PASSWORD) {
@@ -319,6 +322,16 @@
       });
       this.reset();
     };
+    function checkDelegate(id, selectElem) {
+  if (!isAuthorized) {
+    openModal();
+    selectElem.value = ""; 
+    return;
+  }
+  updateDelegate(id, selectElem.value);
+}
+window.checkDelegate = checkDelegate;
+
     function renderTasks(tasks) {
   latestTasks = tasks;
   const tbody1 = document.getElementById('addedTasks');
@@ -343,7 +356,7 @@
       const message = encodeURIComponent(
         `السلام عليكم ورحمة الله وبركاته،
 
-تم تكليفك بمعالجة طلب صيانة جديد:
+تم تكليفك لمعالجة طلب الدعم الفني:
 
 المبنى: ${task.building}
 الدور: ${task.floor}
@@ -369,11 +382,37 @@
     });
     assigneeSelect += `</select>${whatsappIcon}`;
 
-    let delegateSelect = `<select onchange="updateDelegate('${task.id}', this.value)" style="font-size:14px;border-radius:6px;padding:3px;">`;
-    delegateOptions.forEach(opt => {
-      delegateSelect += `<option${task.delegate===opt?' selected':''}>${opt}</option>`;
-    });
-    delegateSelect += `</select>`;
+    let waDelegateIcon = "";
+const waDelegateNum = assigneeWhatsapp[task.delegate];
+if (waDelegateNum) {
+  const waDelegateMsg = encodeURIComponent(
+    `السلام عليكم ورحمة الله وبركاته،
+
+تم تفويضك لمعالجة طلب الدعم الفني:
+
+المبنى: ${task.building}
+الدور: ${task.floor}
+الفصل/المكتب: ${task.classroom}
+المشكلة: ${task.problem}
+
+يرجى التفضل باتخاذ اللازم في أقرب وقت ممكن، مع التكرم بإفادتنا بما تم اتخاذه من إجراءات.
+
+شاكره لكم حسن تعاونكم
+وتفضلوا بقبول فائق الاحترام والتقدير،
+ 
+وحدة تكنولوجيا المعلومات`
+  );
+  waDelegateIcon = `<a href="https://wa.me/${waDelegateNum}?text=${waDelegateMsg}" target="_blank" title="إرسال عبر واتساب" style="margin-right:2px;vertical-align:middle;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:23px;height:23px;">
+  </a>`;
+}
+
+let delegateSelect = `<select onchange="checkDelegate('${task.id}', this)" style="font-size:14px;border-radius:6px;padding:3px;" ${isAuthorized ? "" : "disabled"}>`;
+delegateOptions.forEach(opt => {
+  delegateSelect += `<option${task.delegate===opt?' selected':''}>${opt}</option>`;
+});
+delegateSelect += `</select>${waDelegateIcon}`;
+
 
     tbody2.innerHTML += `
       <tr>
@@ -442,6 +481,8 @@ window.logoutAdmin = logoutAdmin;
   window.updateDelegate = updateDelegate;
   window.markDone = markDone;
   window.delTask = delTask;
+    let delegateSelect = `<select onchange="checkDelegate('${task.id}', this)" style="... " ${isAuthorized ? "" : "disabled"}>`;
+
   </script>
 </body>
 </html>
