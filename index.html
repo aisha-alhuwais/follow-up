@@ -59,9 +59,76 @@
     .lock-btn svg { width: 27px; height: 27px; vertical-align: middle; }
     .lock-btn:hover { filter: brightness(0.5); }
     .lock-btn.unlocked svg { filter: drop-shadow(0 0 3px #10b981) brightness(1.4); }
+
+    /* Modal styles */
+    .modal-bg {
+      display: none; position: fixed; top: 0; right: 0; left: 0; bottom: 0;
+      background: #0005; z-index: 999; align-items: center; justify-content: center;
+    }
+    .modal-bg.show { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px #0002;
+      max-width: 330px;
+      width: 94vw;
+      padding: 30px 24px 24px 24px;
+      text-align: center;
+      font-family: 'Cairo', Tahoma, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      animation: fadein .3s;
+    }
+    @keyframes fadein { from{transform:translateY(40px); opacity:.4} to{transform:none; opacity:1} }
+    .modal-box input[type="password"] {
+      width: 95%;
+      padding: 10px 12px;
+      font-size: 17px;
+      margin-top: 8px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      text-align: center;
+      font-family: 'Cairo', Tahoma, Arial, sans-serif;
+    }
+    .modal-box button {
+      margin-top: 8px;
+      width: 100%;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      font-family: 'Cairo', Tahoma, Arial, sans-serif;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .modal-box button:hover { background: #1d4ed8; }
+    .modal-box .err {
+      color: #dc2626;
+      font-size: 15px;
+      margin: 6px 0 0 0;
+      min-height: 23px;
+      font-family: 'Cairo', Tahoma, Arial, sans-serif;
+    }
   </style>
 </head>
 <body>
+  <!-- نافذة كلمة السر -->
+  <div id="modalBg" class="modal-bg" onclick="hideModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div style="font-size:20px; font-weight:700; margin-bottom:5px;">
+        Password <span style="font-size:19px;">🔒</span>
+      </div>
+      <input id="modalPass" type="password" placeholder="كلمة السر..." autocomplete="current-password" />
+      <div class="err" id="modalErr"></div>
+      <button onclick="submitPassword()">دخول</button>
+    </div>
+  </div>
   <!-- إضافة طلب جديد -->
   <div class="container">
     <h2>إضافة طلب جديد</h2>
@@ -110,7 +177,6 @@
       <tbody id="addedTasks"></tbody>
     </table>
   </div>
-  
   <!-- متابعة الطلبات -->
   <div class="container">
     <h2>
@@ -134,8 +200,6 @@
       <tbody id="taskList"></tbody>
     </table>
   </div>
-
-  <!-- Firebase Config & JS -->
   <script>
     // تهيئة Firebase
     const firebaseConfig = {
@@ -156,25 +220,43 @@
 
     let isAuthorized = false;
     let latestTasks = [];
-    const PASSWORD = "art@4231"; 
+    const PASSWORD = "art@4231";
 
-    // زر القفل 
+    //  الباسورد
+    const modalBg = document.getElementById('modalBg');
+    const modalPass = document.getElementById('modalPass');
+    const modalErr = document.getElementById('modalErr');
     document.getElementById('lockBtn').onclick = function(e) {
       e.preventDefault();
       if (isAuthorized) {
         alert("أنت بالفعل في وضع المسؤول.");
         return;
       }
-      const pw = prompt("أدخل كلمة السر :");
-      if (pw === PASSWORD) {
+      modalBg.classList.add('show');
+      modalPass.value = '';
+      modalErr.innerText = '';
+      setTimeout(()=>{modalPass.focus();},100);
+    };
+    function hideModal(e) {
+      if (e && (e.target === modalBg)) modalBg.classList.remove('show');
+    }
+    function submitPassword() {
+      if (modalPass.value === PASSWORD) {
         isAuthorized = true;
-        this.classList.add("unlocked");
-        alert("تم تفعيل الصلاحية !");
+        document.getElementById("lockBtn").classList.add("unlocked");
+        modalBg.classList.remove('show');
         renderTasks(latestTasks);
       } else {
-        alert("كلمة السر غير صحيحة!");
+        modalErr.innerText = "كلمة السر غير صحيحة!";
+        modalPass.value = '';
+        modalPass.focus();
       }
-    };
+    }
+    window.hideModal = hideModal;
+    window.submitPassword = submitPassword;
+    modalPass.addEventListener('keydown', function(e) {
+      if (e.key === "Enter") submitPassword();
+    });
 
     document.getElementById('addTaskForm').onsubmit = async function(e) {
       e.preventDefault();
@@ -231,8 +313,8 @@
                   <button class="del-btn" onclick="window.delTask('${task.id}')">حذف</button>
                 `
                 : `
-                  <button class="done-btn" onclick="window.requirePassword()">Done</button>
-                  <button class="del-btn" onclick="window.requirePassword()">Delete</button>
+                  <button class="done-btn" onclick="window.showModal()">Done</button>
+                  <button class="del-btn" onclick="window.showModal()">Delete</button>
                 `
               }
             </td>
@@ -240,23 +322,17 @@
         `;
       });
     }
-
-    window.requirePassword = function() {
+    window.showModal = function() {
       if (!isAuthorized) {
-        const pw = prompt("الرجاء إدخال كلمة السر لتفعيل التعديلات:");
-        if (pw === PASSWORD) {
-          isAuthorized = true;
-          document.getElementById("lockBtn").classList.add("unlocked");
-          alert("تم تفعيل صلاحية التعديل!");
-          renderTasks(latestTasks);
-        } else {
-          alert("كلمة السر غير صحيحة!");
-        }
+        modalBg.classList.add('show');
+        modalPass.value = '';
+        modalErr.innerText = '';
+        setTimeout(()=>{modalPass.focus();},100);
       }
     }
     window.checkAssign = function(id, selectElem) {
       if (!isAuthorized) {
-        window.requirePassword();
+        window.showModal();
         selectElem.value = ""; 
         return;
       }
@@ -273,7 +349,7 @@
     }
     window.delTask = function(id) {
       if (!isAuthorized) {
-        window.requirePassword();
+        window.showModal();
         return;
       }
       if (confirm('هل أنت متأكد من حذف الطلب؟')) {
