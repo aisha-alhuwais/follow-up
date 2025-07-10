@@ -197,6 +197,7 @@
         <th>المشكلة</th>
         <th>مكلّف بها</th>
          <th>تفويض إلى</th>
+         <th>ملاحظة</th>
         <th>الحالة</th>
         <th>تحكم</th>
       </tr>
@@ -254,7 +255,7 @@
       "", "عائشه الحويس","محمد وهبة", "شيخة الغريب", "دلال العتيبي", "نورية سالم", "غنيمة بشاره", "ارافيند موهان", "مريم العلي"
     ];
      const delegateOptions = [
-    "", "محمد وهبة", "ارافيند موهان",
+      "", "عائشه الحويس","محمد وهبة", "شيخة الغريب", "دلال العتيبي", "نورية سالم", "غنيمة بشاره", "ارافيند موهان", "مريم العلي"
   ];
     
     let isAuthorized = false;
@@ -407,6 +408,7 @@ delegateSelect += `</select>${waDelegateIcon}`;
 
 
     tbody2.innerHTML += `
+    
       <tr>
         <td>${task.building}</td>
         <td>${task.floor}</td>
@@ -414,6 +416,13 @@ delegateSelect += `</select>${waDelegateIcon}`;
         <td>${task.problem}</td>
         <td>${assigneeSelect}</td>
         <td>${delegateSelect}</td>
+        <td>
+  <button onclick="openNote('${task.id}', '${task.note ? task.note.replace(/'/g,"\\'") : ''}')"
+    title="إضافة/تعديل ملاحظة"
+    style="background:none; border:none; cursor:pointer; font-size:20px; color:#fbbf24;">
+    📝
+  </button>
+</td>
         <td><span class="status ${task.status === 'منجزة' ? 'done' : 'todo'}">${task.status}</span></td>
         <td class="controls">
           ${isAuthorized 
@@ -469,6 +478,37 @@ window.logoutAdmin = logoutAdmin;
   function updateDelegate(id, val) {
     db.collection('tasks').doc(id).update({ delegate: val });
   }
+  function openNote(id, currentNote) {
+  if (!isAuthorized) {
+    openModal();
+    return;
+  }
+  Swal.fire({
+    title: 'ملاحظة للطلب',
+    input: 'textarea',
+    inputLabel: 'اكتب ملاحظتك أو التحديث هنا',
+    inputValue: currentNote || '',
+    showCancelButton: true,
+    confirmButtonText: 'حفظ',
+    cancelButtonText: 'إلغاء',
+    inputAttributes: {
+      dir: 'rtl',
+      style: 'min-height:70px;font-family:Cairo,Tahoma,Arial,sans-serif;font-size:15px;'
+    }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      db.collection('tasks').doc(id).update({ note: result.value });
+      Swal.fire({
+        icon: 'success',
+        title: 'تم الحفظ',
+        timer: 1200,
+        showConfirmButton: false
+      });
+    }
+  });
+}
+window.openNote = openNote;
+
   function delTask(id) {
   if (!isAuthorized) {
     openModal();
@@ -496,9 +536,7 @@ window.logoutAdmin = logoutAdmin;
     }
   });
 }
-window.delTask = delTask;
-
-
+  window.delTask = delTask;
   window.updateAssignee = updateAssignee;
   window.updateDelegate = updateDelegate;
   window.markDone = markDone;
