@@ -354,7 +354,7 @@ window.checkDelegate = checkDelegate;
 المبنى: ${task.building}
 الدور: ${task.floor}
 الفصل/المكتب: ${task.classroom}
-المشكلة: ${task.problem}
+المشكلة: ${task.problem }
 
 يرجى التفضل باتخاذ اللازم في أقرب وقت ممكن، مع التكرم بإفادتنا بما تم اتخاذه من إجراءات.
 
@@ -377,7 +377,7 @@ window.checkDelegate = checkDelegate;
 
     let waDelegateIcon = "";
 const waDelegateNum = assigneeWhatsapp[task.delegate];
-if (waDelegateNum) {
+if (isAuthorized && waDelegateNum)  {
   const waDelegateMsg = encodeURIComponent(
     `السلام عليكم ورحمة الله وبركاته،
 
