@@ -116,14 +116,44 @@
     .modal-err { color: #ef4444; font-size: 15px; min-height: 23px; margin-bottom: 2px;}
   </style>
 </head>
+  
 <body>
+</div>
+
   <div class="container">
-    <h2>إضافة طلب جديد</h2>
+<h2 style="display: flex; align-items: center; justify-content: space-between;">
+  <span>إضافة طلب جديد</span>
+  <span style="display: flex; align-items: center; gap: 7px;">
+    <button 
+      onclick="window.open('classes.html', '_blank')" 
+      style="display: flex; align-items: center; gap: 7px;
+             font-family: 'Cairo', Tahoma, Arial, sans-serif;
+             background: #2563eb; color: #fff; border: none; border-radius: 10px;
+             padding: 7px 18px; font-size: 16px; font-weight: 700; cursor: pointer;
+             box-shadow: 0 2px 6px #0002; transition: background 0.2s;"
+      onmouseover="this.style.background='#1d4ed8'"
+      onmouseout="this.style.background='#2563eb'"
+      title="عرض الجدول الرئيسي"
+    >
+      الفصول الدراسية
+    </button>
+<button 
+  id="loginLockBtn"
+  onclick="toggleLoginLock()"
+  style="background:none; border:none; cursor:pointer; font-size:22px; margin-right:4px;"
+  title="تسجيل الدخول لإضافة طلب جديد"
+>
+  <span id="loginLockIcon">🔒</span>
+</button>
+
+  </span>
+</h2>
+
     <form id="addTaskForm" autocomplete="off">
       <div class="form-row">
         <div class="field-box">
           <label for="sender">المرسل</label>
-          <select id="sender" required>
+          <select id="sender" required disabled>
             <option value="">اختر اسمك</option>
             <option>أيمن الراشد</option>
             <option>بدرية الصالح</option>
@@ -135,7 +165,7 @@
         </div>
         <div class="field-box">
           <label for="building">المبنى</label>
-          <select id="building" required>
+          <select id="building" required disabled>
             <option value="">اختر المبنى</option>
             <option>الشمالي</option>
             <option>الجنوبي</option>
@@ -143,7 +173,7 @@
         </div>
         <div class="field-box">
           <label for="floor">الدور</label>
-          <select id="floor" required>
+          <select id="floor" required disabled>
             <option value="">الدور</option>
             <option>G</option>
             <option>1</option>
@@ -154,16 +184,16 @@
         </div>
         <div class="field-box">
           <label for="classroom">الفصل</label>
-          <input type="text" id="classroom" placeholder="رقم الفصل/المكتب" required />
+          <input type="text" id="classroom" placeholder="رقم الفصل/المكتب" required disabled/>
         </div>
       </div>
       <div class="field-box" style="margin-top:10px;">
         <label for="problem">المشكلة</label>
-        <textarea id="problem" placeholder="وصف المشكلة بالتفصيل" required></textarea>
+        <textarea id="problem" placeholder="وصف المشكلة بالتفصيل" required disabled></textarea>
       </div>
-      <div class="add-btn-row">
-        <button type="submit">إضافة</button>
-      </div>
+  <div class="add-btn-row">
+  <button type="submit" id="addBtn" disabled>إضافة</button>
+</div>
     </form>
     <table>
       <thead>
@@ -181,13 +211,13 @@
   
   <!-- متابعة الطلبات -->
  <div class="container">
-  <h2>
-    متابعة الطلب
-    <button id="lockBtn" class="lock-btn" title="Password" type="button">
-      <svg viewBox="0 0 24 24" fill="none"><path d="M17 11V7A5 5 0 0 0 7 7v4M5 11h14v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7Zm7 3v2" stroke="#1e293b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-    <button onclick="logoutAdmin()" class="unlock-btn" title="إغلاق القفل" style="font-size:20px;vertical-align:middle;background:none;border:none;cursor:pointer;color:#1e293b;">🔓</button>
-  </h2>
+<h2 style="display:flex;align-items:center;gap:10px;justify-content:center;">
+  متابعة الطلب
+  <button id="lockBtn" class="lock-btn" title="الدخول كمسؤول/تسجيل خروج" type="button" style="margin-right: 6px; font-size:22px;background:none;border:none;cursor:pointer;">
+    <span id="lockEmoji">🔒</span>
+  </button>
+</h2>
+
   <table>
     <thead>
       <tr>
@@ -239,6 +269,7 @@
   "ارافيند موهان": "96597775702",
   "مريم العلي": "96565551239"
 };
+    
     const firebaseConfig = {
       apiKey: "AIzaSyDqMFfWwtzXInusoxsJxgEO5_ptz_fRk6E",
       authDomain: "itu-coa.firebaseapp.com",
@@ -260,7 +291,13 @@
     
     let isAuthorized = false;
     let latestTasks = [];
-    const PASSWORD = "art@4231";
+    let isFormAuthorized = false;
+    const PASSWORD = "art@4231"
+    const allowedUsers = [ { username: "22101186", password: "art@4231"},
+      { username: "20203110", password: "art@3110"},
+      { username: "21301189", password: "art@1189"},
+      { username: "22301615", password: "art@1615"},
+      { username: "admin", password: "art@25"} ];
 
     function openModal() {
       document.getElementById("modalBg").classList.add("active");
@@ -268,33 +305,83 @@
       document.getElementById("modalErr").textContent = "";
       setTimeout(()=>{ document.getElementById("modalPw").focus(); }, 200);
     }
+
     function closeModal() {
       document.getElementById("modalBg").classList.remove("active");
     }
-    
-    function submitModalPw() {
-      const pw = document.getElementById("modalPw").value.trim();
-      if (pw === PASSWORD) {
-        isAuthorized = true;
-        document.getElementById("lockBtn").classList.add("unlocked");
-        closeModal();
-        renderTasks(latestTasks);
+ 
+function submitModalPw() {
+  const pw = document.getElementById("modalPw").value.trim();
+  if (pw === PASSWORD) {
+    isAuthorized = true;
+    closeModal();
+    renderTasks(latestTasks);
+    updateLockEmoji();
+  } else {
+    document.getElementById("modalErr").textContent = "كلمة السر غير صحيحة!";
+  }
+}
+
+    function openLoginModal() {
+  Swal.fire({
+    title: 'تسجيل الدخول',
+    html: `
+      <input id="swal-username" class="swal2-input" placeholder="اسم المستخدم" dir="rtl">
+      <input id="swal-password" type="password" class="swal2-input" placeholder="كلمة السر" dir="rtl">
+    `,
+    confirmButtonText: 'دخول',
+    showCancelButton: true,
+    cancelButtonText: 'إلغاء',
+    preConfirm: () => {
+      const username = document.getElementById('swal-username').value.trim();
+      const password = document.getElementById('swal-password').value;
+      if (!username || !password) {
+        Swal.showValidationMessage('يرجى إدخال اسم المستخدم وكلمة السر');
+        return false;
+      }
+      const found = allowedUsers.some(u => u.username === username && u.password === password);
+      if (found) {
+        return { username, password };
       } else {
-        document.getElementById("modalErr").textContent = "كلمة السر غير صحيحة!";
+        Swal.showValidationMessage('اسم المستخدم أو كلمة السر غير صحيحة');
+        return false;
       }
     }
+  }).then((result) => {
+    if (result.isConfirmed && result.value) {
+      Swal.fire({
+        icon: 'success',
+        title: 'تم تسجيل الدخول بنجاح!',
+        timer: 1000,
+        showConfirmButton: false
+      });
+      isFormAuthorized = true; 
+      enableFormInputs();
+      document.getElementById('loginLockIcon').textContent = '🔓';
+    }
+  });
+}
+
+window.onload = function() {
+  enableFormInputs(false);
+};
+
     window.openModal = openModal;
     window.closeModal = closeModal;
     window.submitModalPw = submitModalPw;
 
     document.getElementById('lockBtn').onclick = function(e) {
-      e.preventDefault();
-      if (isAuthorized) {
-        alert("أنت بالفعل في وضع المسؤول.");
-        return;
-      }
-      openModal();
-    };
+  e.preventDefault();
+  if (!isAuthorized) {
+    openModal();
+  } else {
+    // خروج
+    isAuthorized = false;
+    renderTasks(latestTasks);
+    updateLockEmoji();
+  }
+};
+
     document.getElementById('modalPw').addEventListener('keydown', function(e){
       if(e.key === "Enter"){ submitModalPw(); }
     });
@@ -324,6 +411,15 @@
   updateDelegate(id, selectElem.value);
 }
 window.checkDelegate = checkDelegate;
+
+function enableFormInputs(enable = true) {
+  document.getElementById('sender').disabled = !enable;
+  document.getElementById('building').disabled = !enable;
+  document.getElementById('floor').disabled = !enable;
+  document.getElementById('classroom').disabled = !enable;
+  document.getElementById('problem').disabled = !enable;
+  document.querySelector('.add-btn-row button').disabled = !enable;
+}
 
     function renderTasks(tasks) {
   latestTasks = tasks;
@@ -437,6 +533,11 @@ delegateSelect += `</select>${waDelegateIcon}`;
     `;
   });
 }
+function updateLockEmoji() {
+  const lockEmoji = document.getElementById('lockEmoji');
+  if (!lockEmoji) return;
+  lockEmoji.textContent = isAuthorized ? "🔓" : "🔒";
+}
 
     function checkAssign(id, selectElem) {
       if (!isAuthorized) {
@@ -464,12 +565,13 @@ window.logoutAdmin = logoutAdmin;
     window.delTask = delTask;
     window.checkAssign = checkAssign;
     window.updateAssignee = updateAssignee;
+db.collection('tasks').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+  const tasks = [];
+  snapshot.forEach(doc => tasks.push({ ...doc.data(), id: doc.id }));
+  renderTasks(tasks);
+  updateLockEmoji();
+});
 
-    db.collection('tasks').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-      const tasks = [];
-      snapshot.forEach(doc => tasks.push({ ...doc.data(), id: doc.id }));
-      renderTasks(tasks);
-    });
     //  مكلّف بها
   function updateAssignee(id, val) {
     db.collection('tasks').doc(id).update({ assignee: val });
@@ -536,6 +638,16 @@ window.openNote = openNote;
     }
   });
 }
+function toggleLoginLock() {
+  if (isFormAuthorized) {
+    isFormAuthorized = false;
+    document.getElementById('loginLockIcon').textContent = '🔒';
+    enableFormInputs(false);
+  } else {
+    openLoginModal();
+  }
+}
+
   window.delTask = delTask;
   window.updateAssignee = updateAssignee;
   window.updateDelegate = updateDelegate;
