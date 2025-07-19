@@ -1,4 +1,4 @@
-<!-- Prepared by: Eng. Aisha Alhuwais | ID: 22101186 -->
+<!-- Prepared by: Eng. Aisha Alhuwais | ID: 22101186 --> 
 <html lang="ar" dir="rtl">
 <head>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>وحدة تكنولوجيات المعلومات</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+  <!-- Firebase  -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
   <style>
@@ -115,30 +116,39 @@
     .modal-err { color: #ef4444; font-size: 15px; min-height: 23px; margin-bottom: 2px;}
   </style>
 </head>
+  
 <body>
+</div>
+
   <div class="container">
-    <h2 style="display: flex; align-items: center; justify-content: space-between;">
-      <span>إضافة طلب جديد</span>
-      <span style="display: flex; align-items: center; gap: 7px;">
-        <button 
-          onclick="window.open('classes.html', '_blank')" 
-          style="display: flex; align-items: center; gap: 7px;
-                font-family: 'Cairo', Tahoma, Arial, sans-serif;
-                background: #2563eb; color: #fff; border: none; border-radius: 10px;
-                padding: 7px 18px; font-size: 16px; font-weight: 700; cursor: pointer;
-                box-shadow: 0 2px 6px #0002; transition: background 0.2s;"
-          onmouseover="this.style.background='#1d4ed8'"
-          onmouseout="this.style.background='#2563eb'"
-          title="عرض الجدول الرئيسي"
-        >الفصول الدراسية</button>
-        <button 
-          id="loginLockBtn"
-          onclick="toggleLoginLock()"
-          style="background:none; border:none; cursor:pointer; font-size:22px; margin-right:4px;"
-          title="تسجيل الدخول لإضافة طلب جديد"
-        ><span id="loginLockIcon">🔒</span></button>
-      </span>
-    </h2>
+<h2 style="display: flex; align-items: center; justify-content: space-between;">
+  <span>إضافة طلب جديد</span>
+  <span style="display: flex; align-items: center; gap: 7px;">
+    <button 
+      onclick="window.open('classes.html', '_blank')" 
+      style="display: flex; align-items: center; gap: 7px;
+             font-family: 'Cairo', Tahoma, Arial, sans-serif;
+             background: #2563eb; color: #fff; border: none; border-radius: 10px;
+             padding: 7px 18px; font-size: 16px; font-weight: 700; cursor: pointer;
+             box-shadow: 0 2px 6px #0002; transition: background 0.2s;"
+      onmouseover="this.style.background='#1d4ed8'"
+      onmouseout="this.style.background='#2563eb'"
+      title="عرض الجدول الرئيسي"
+    >
+      الفصول الدراسية
+    </button>
+<button 
+  id="loginLockBtn"
+  onclick="toggleLoginLock()"
+  style="background:none; border:none; cursor:pointer; font-size:22px; margin-right:4px;"
+  title="تسجيل الدخول لإضافة طلب جديد"
+>
+  <span id="loginLockIcon">🔒</span>
+</button>
+
+  </span>
+</h2>
+
     <form id="addTaskForm" autocomplete="off">
       <div class="form-row">
         <div class="field-box">
@@ -181,9 +191,9 @@
         <label for="problem">المشكلة</label>
         <textarea id="problem" placeholder="وصف المشكلة بالتفصيل" required disabled></textarea>
       </div>
-      <div class="add-btn-row">
-        <button type="submit" id="addBtn" disabled>إضافة</button>
-      </div>
+  <div class="add-btn-row">
+  <button type="submit" id="addBtn" disabled>إضافة</button>
+</div>
     </form>
     <table>
       <thead>
@@ -198,30 +208,35 @@
       <tbody id="addedTasks"></tbody>
     </table>
   </div>
-  <div class="container">
-    <h2 style="display:flex;align-items:center;gap:10px;justify-content:center;">
-      متابعة الطلب
-      <button id="lockBtn" class="lock-btn" title="الدخول كمسؤول/تسجيل خروج" type="button" style="margin-right: 6px; font-size:22px;background:none;border:none;cursor:pointer;">
-        <span id="lockEmoji">🔒</span>
-      </button>
-    </h2>
-    <table>
-      <thead>
-        <tr>
-          <th>المبنى</th>
-          <th>الدور</th>
-          <th>الفصل</th>
-          <th>المشكلة</th>
-          <th>مكلّف بها</th>
-          <th>تفويض إلى</th>
-          <th>ملاحظة</th>
-          <th>الحالة</th>
-          <th>تحكم</th>
-        </tr>
-      </thead>
-      <tbody id="taskList"></tbody>
-    </table>
-  </div>
+  
+  <!-- متابعة الطلبات -->
+ <div class="container">
+<h2 style="display:flex;align-items:center;gap:10px;justify-content:center;">
+  متابعة الطلب
+  
+  <button id="loginLockBtn" onclick="openLoginModal()" ...>
+  <span id="loginLockIcon">🔒</span>
+</button>
+</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>المبنى</th>
+        <th>الدور</th>
+        <th>الفصل</th>
+        <th>المشكلة</th>
+        <th>مكلّف بها</th>
+         <th>تفويض إلى</th>
+         <th>ملاحظة</th>
+        <th>الحالة</th>
+        <th>تحكم</th>
+      </tr>
+    </thead>
+    <tbody id="taskList"></tbody>
+  </table>
+</div>
+
   <div class="modal-bg" id="modalBg">
     <div class="modal-box" dir="rtl" style="position:relative;">
       <button class="modal-close" onclick="closeModal()">&times;</button>
@@ -232,6 +247,8 @@
       <button onclick="submitModalPw()">دخول</button>
     </div>
   </div>
+
+  <!-- Firebase Config & JS -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDqMFfWwtzXInusoxsJxgEO5_ptz_fRk6E",
@@ -248,93 +265,33 @@
     const assigneeOptions = [
       "", "عائشه الحويس","محمد وهبة", "شيخة الغريب", "دلال العتيبي", "نورية سالم", "غنيمة بشاره", "ارافيند موهان", "مريم العلي"
     ];
-    const delegateOptions = [
+     const delegateOptions = [
       "", "عائشه الحويس","محمد وهبة", "شيخة الغريب", "دلال العتيبي", "نورية سالم", "غنيمة بشاره", "ارافيند موهان", "مريم العلي"
-    ];
+  ];
     let whatsappNumbers = {};
-    db.collection('whatsapp_numbers').get().then(snapshot => {
-      snapshot.forEach(doc => {
-        whatsappNumbers[doc.data().name] = doc.data().number;
-      });
-    });
+
+db.collection('whatsapp_numbers').get().then(snapshot => {
+  snapshot.forEach(doc => {
+    whatsappNumbers[doc.data().name] = doc.data().number;
+  });
+});
 
     let isAuthorized = false;
     let latestTasks = [];
     let isFormAuthorized = false;
-
+    const PASSWORD = "art@4231"
+ 
     let allowedUsers = [];
-    let allowedUsersLoaded = false;
 
-    function loadAllowedUsers() {
-      return db.collection('allowed_users').get().then(snapshot => {
-        allowedUsers = [];
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          allowedUsers.push({ username: String(data.username).trim(), password: String(data.password).trim() });
-        });
-        allowedUsersLoaded = true;
-      }).catch(error => {
-        allowedUsersLoaded = false;
-        Swal.fire("خطأ", "فشل تحميل المستخدمين: " + error.message, "error");
-      });
-    }
-
-    function openLoginModal() {
-      if (allowedUsersLoaded && allowedUsers.length > 0) {
-        showLoginDialog();
-      } else {
-        Swal.fire({title: 'جاري تحميل المستخدمين...', didOpen: () => Swal.showLoading()});
-        loadAllowedUsers().then(() => {
-          Swal.close();
-          showLoginDialog();
-        });
-      }
-    }
-
-    function showLoginDialog() {
-      Swal.fire({
-        title: 'تسجيل الدخول',
-        html: `
-          <input id="swal-username" class="swal2-input" placeholder="اسم المستخدم" dir="rtl">
-          <input id="swal-password" type="password" class="swal2-input" placeholder="كلمة السر" dir="rtl">
-        `,
-        confirmButtonText: 'دخول',
-        showCancelButton: true,
-        cancelButtonText: 'إلغاء',
-        preConfirm: () => {
-          const username = document.getElementById('swal-username').value.trim();
-          const password = document.getElementById('swal-password').value;
-          if (!username || !password) {
-            Swal.showValidationMessage('يرجى إدخال اسم المستخدم وكلمة السر');
-            return false;
-          }
-          const found = allowedUsers.some(u => u.username === username && u.password === password);
-          if (found) {
-            return { username, password };
-          } else {
-            Swal.showValidationMessage('اسم المستخدم أو كلمة السر غير صحيحة');
-            return false;
-          }
-        }
-      }).then((result) => {
-        if (result.isConfirmed && result.value) {
-          Swal.fire({
-            icon: 'success',
-            title: 'تم تسجيل الدخول بنجاح!',
-            timer: 1000,
-            showConfirmButton: false
-          });
-          isFormAuthorized = true;
-          enableFormInputs();
-          document.getElementById('loginLockIcon').textContent = '🔓';
-        }
-      });
-    }
-
-    window.onload = function() {
-      enableFormInputs(false);
-      loadAllowedUsers();
-    };
+function loadAllowedUsers() {
+  return db.collection('allowed_users').get().then(snapshot => {
+    allowedUsers = [];
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      allowedUsers.push({ username: data.username, password: data.password });
+    });
+  });
+}
 
     function openModal() {
       document.getElementById("modalBg").classList.add("active");
@@ -346,29 +303,100 @@
     function closeModal() {
       document.getElementById("modalBg").classList.remove("active");
     }
-
-    function submitModalPw() {
-      const pw = document.getElementById("modalPw").value.trim();
-      if (pw === "art@4231") {
-        isAuthorized = true;
-        closeModal();
-        renderTasks(latestTasks);
-        updateLockEmoji();
+ 
+function submitModalPw() {
+  const username = document.getElementById("modalUser").value.trim();
+  const pw = document.getElementById("modalPw").value.trim();
+  if (!username || !pw) {
+    document.getElementById("modalErr").textContent = "أدخل اسم المستخدم وكلمة السر";
+    return;
+  }
+   db.collection("admin_users").where("username", "==", username).get().then(snapshot => {
+    if (snapshot.empty) {
+      document.getElementById("modalErr").textContent = "اسم المستخدم غير صحيح!";
+      return;
+    }
+    let found = false;
+    snapshot.forEach(doc => {
+      if (doc.data().password === pw) {
+        found = true;
+      }
+    });
+    if (found) {
+      isAuthorized = true;
+      closeModal();
+      renderTasks(latestTasks);
+      updateLockEmoji();
+    } else {
+      document.getElementById("modalErr").textContent = "كلمة السر غير صحيحة!";
+    }
+  }).catch(err => {
+    document.getElementById("modalErr").textContent = "حدث خطأ أثناء تسجيل الدخول!";
+  });
+}
+    function openLoginModal() {
+  Swal.fire({
+    title: 'تسجيل الدخول',
+    html: `
+      <input id="swal-username" class="swal2-input" placeholder="اسم المستخدم" dir="rtl" style="margin-bottom:6px;">
+      <input id="swal-password" type="password" class="swal2-input" placeholder="كلمة السر" dir="rtl">
+    `,
+    confirmButtonText: 'دخول',
+    showCancelButton: true,
+    cancelButtonText: 'إلغاء',
+    preConfirm: () => {
+      const username = document.getElementById('swal-username').value.trim();
+      const password = document.getElementById('swal-password').value;
+      if (!username || !password) {
+        Swal.showValidationMessage('يرجى إدخال اسم المستخدم وكلمة السر');
+        return false;
+      }
+      // استبدل هنا بالتحقق المطلوب (مثلاً تحقق مع بيانات Firestore أو Array)
+      // مثال ثابت:
+      if (
+        (username === 'aisha' && password === '4231') ||
+        (username === 'mariam' && password === '1111')
+      ) {
+        return { username, password };
       } else {
-        document.getElementById("modalErr").textContent = "كلمة السر غير صحيحة!";
+        Swal.showValidationMessage('اسم المستخدم أو كلمة السر غير صحيحة');
+        return false;
       }
     }
+  }).then((result) => {
+    if (result.isConfirmed && result.value) {
+      Swal.fire({
+        icon: 'success',
+        title: 'تم تسجيل الدخول بنجاح!',
+        timer: 1000,
+        showConfirmButton: false
+      });
+      isFormAuthorized = true;
+      document.getElementById('loginLockIcon').textContent = '🔓';
+      enableFormInputs();
+    }
+  });
+}
+
+window.onload = function() {
+  enableFormInputs(false);
+  loadAllowedUsers();
+};
+    window.openModal = openModal;
+    window.closeModal = closeModal;
+    window.submitModalPw = submitModalPw;
 
     document.getElementById('lockBtn').onclick = function(e) {
-      e.preventDefault();
-      if (!isAuthorized) {
-        openModal();
-      } else {
-        isAuthorized = false;
-        renderTasks(latestTasks);
-        updateLockEmoji();
-      }
-    };
+  e.preventDefault();
+  if (!isAuthorized) {
+    openModal();
+  } else {
+    // خروج
+    isAuthorized = false;
+    renderTasks(latestTasks);
+    updateLockEmoji();
+  }
+};
 
     document.getElementById('modalPw').addEventListener('keydown', function(e){
       if(e.key === "Enter"){ submitModalPw(); }
@@ -390,49 +418,48 @@
       });
       this.reset();
     };
-
     function checkDelegate(id, selectElem) {
-      if (!isAuthorized) {
-        openModal();
-        selectElem.value = "";
-        return;
-      }
-      updateDelegate(id, selectElem.value);
-    }
-    window.checkDelegate = checkDelegate;
+  if (!isAuthorized) {
+    openModal();
+    selectElem.value = ""; 
+    return;
+  }
+  updateDelegate(id, selectElem.value);
+}
+window.checkDelegate = checkDelegate;
 
-    function enableFormInputs(enable = true) {
-      document.getElementById('sender').disabled = !enable;
-      document.getElementById('building').disabled = !enable;
-      document.getElementById('floor').disabled = !enable;
-      document.getElementById('classroom').disabled = !enable;
-      document.getElementById('problem').disabled = !enable;
-      document.querySelector('.add-btn-row button').disabled = !enable;
-    }
+function enableFormInputs(enable = true) {
+  document.getElementById('sender').disabled = !enable;
+  document.getElementById('building').disabled = !enable;
+  document.getElementById('floor').disabled = !enable;
+  document.getElementById('classroom').disabled = !enable;
+  document.getElementById('problem').disabled = !enable;
+  document.querySelector('.add-btn-row button').disabled = !enable;
+}
 
     function renderTasks(tasks) {
-      latestTasks = tasks;
-      const tbody1 = document.getElementById('addedTasks');
-      tbody1.innerHTML = '';
-      tasks.forEach(task => {
-        tbody1.innerHTML += `
-          <tr>
-            <td>${task.sender || ""}</td>
-            <td>${task.building}</td>
-            <td>${task.floor}</td>
-            <td>${task.classroom}</td>
-            <td>${task.problem}</td>
-          </tr>
-        `;
-      });
+  latestTasks = tasks;
+  const tbody1 = document.getElementById('addedTasks');
+  tbody1.innerHTML = '';
+  tasks.forEach(task => {
+    tbody1.innerHTML += `
+      <tr>
+        <td>${task.sender || ""}</td>
+        <td>${task.building}</td>
+        <td>${task.floor}</td>
+        <td>${task.classroom}</td>
+        <td>${task.problem}</td>
+      </tr>
+    `;
+  });
 
-      const tbody2 = document.getElementById('taskList');
-      tbody2.innerHTML = '';
-      tasks.forEach(task => {
-        let whatsappIcon = '';
-        if (isAuthorized && task.assignee && whatsappNumbers[task.assignee]) {
-          const message = encodeURIComponent(
-            `السلام عليكم ورحمة الله وبركاته،
+  const tbody2 = document.getElementById('taskList');
+  tbody2.innerHTML = '';
+  tasks.forEach(task => {
+    let whatsappIcon = '';
+    if (isAuthorized && task.assignee && whatsappNumbers[task.assignee]) {
+      const message = encodeURIComponent(
+        `السلام عليكم ورحمة الله وبركاته،
 
 تم تكليفك لمعالجة طلب الدعم الفني:
 
@@ -445,26 +472,26 @@
 
 شاكره لكم حسن تعاونكم
 وتفضلوا بقبول فائق الاحترام والتقدير،
-
+ 
  وحدة تكنولوجيا المعلومات `
-          );
-          const waNum = whatsappNumbers[task.assignee];
-          whatsappIcon = `<a href="https://wa.me/${waNum}?text=${message}" target="_blank" title="إرسال عبر واتساب" style="margin-right:2px;vertical-align:middle;">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:23px;height:23px;">
-          </a>`;
-        }
+      );
+      const waNum = whatsappNumbers[task.assignee];
+      whatsappIcon = `<a href="https://wa.me/${waNum}?text=${message}" target="_blank" title="إرسال عبر واتساب" style="margin-right:2px;vertical-align:middle;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:23px;height:23px;">
+      </a>`;
+    }
 
-        let assigneeSelect = `<select onchange="checkAssign('${task.id}', this)" style="font-size:14px;border-radius:6px;padding:3px; font-family:'Cairo',Tahoma,Arial,sans-serif;" ${isAuthorized ? "" : "disabled"}>`;
-        assigneeOptions.forEach(opt => {
-          assigneeSelect += `<option${task.assignee===opt?' selected':''}>${opt}</option>`;
-        });
-        assigneeSelect += `</select>${whatsappIcon}`;
+    let assigneeSelect = `<select onchange="checkAssign('${task.id}', this)" style="font-size:14px;border-radius:6px;padding:3px; font-family:'Cairo',Tahoma,Arial,sans-serif;" ${isAuthorized ? "" : "disabled"}>`;
+    assigneeOptions.forEach(opt => {
+      assigneeSelect += `<option${task.assignee===opt?' selected':''}>${opt}</option>`;
+    });
+    assigneeSelect += `</select>${whatsappIcon}`;
 
-        let waDelegateIcon = "";
-        const waDelegateNum = whatsappNumbers[task.delegate];
-        if (isAuthorized && waDelegateNum)  {
-          const waDelegateMsg = encodeURIComponent(
-            `السلام عليكم ورحمة الله وبركاته،
+    let waDelegateIcon = "";
+const waDelegateNum = whatsappNumbers[task.delegate];
+if (isAuthorized && waDelegateNum)  {
+  const waDelegateMsg = encodeURIComponent(
+    `السلام عليكم ورحمة الله وبركاته،
 
 تم تفويضك لمعالجة طلب الدعم الفني:
 
@@ -477,54 +504,56 @@
 
 شاكره لكم حسن تعاونكم
 وتفضلوا بقبول فائق الاحترام والتقدير،
-
+ 
 وحدة تكنولوجيا المعلومات`
-          );
-          waDelegateIcon = `<a href="https://wa.me/${waDelegateNum}?text=${waDelegateMsg}" target="_blank" title="إرسال عبر واتساب" style="margin-right:2px;vertical-align:middle;">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:23px;height:23px;">
-          </a>`;
-        }
+  );
+  waDelegateIcon = `<a href="https://wa.me/${waDelegateNum}?text=${waDelegateMsg}" target="_blank" title="إرسال عبر واتساب" style="margin-right:2px;vertical-align:middle;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:23px;height:23px;">
+  </a>`;
+}
 
-        let delegateSelect = `<select onchange="checkDelegate('${task.id}', this)" style="font-size:14px;border-radius:6px;padding:3px;" ${isAuthorized ? "" : "disabled"}>`;
-        delegateOptions.forEach(opt => {
-          delegateSelect += `<option${task.delegate===opt?' selected':''}>${opt}</option>`;
-        });
-        delegateSelect += `</select>${waDelegateIcon}`;
+let delegateSelect = `<select onchange="checkDelegate('${task.id}', this)" style="font-size:14px;border-radius:6px;padding:3px;" ${isAuthorized ? "" : "disabled"}>`;
+delegateOptions.forEach(opt => {
+  delegateSelect += `<option${task.delegate===opt?' selected':''}>${opt}</option>`;
+});
+delegateSelect += `</select>${waDelegateIcon}`;
 
-        tbody2.innerHTML += `
-          <tr>
-            <td>${task.building}</td>
-            <td>${task.floor}</td>
-            <td>${task.classroom}</td>
-            <td>${task.problem}</td>
-            <td>${assigneeSelect}</td>
-            <td>${delegateSelect}</td>
-            <td>
-              <button onclick="openNote('${task.id}', '${task.note ? task.note.replace(/'/g,"\\'") : ''}')"
-                title="إضافة/تعديل ملاحظة"
-                style="background:none; border:none; cursor:pointer; font-size:20px; color:#fbbf24;">
-                📝
-              </button>
-            </td>
-            <td><span class="status ${task.status === 'منجزة' ? 'done' : 'todo'}">${task.status}</span></td>
-            <td class="controls">
-              ${isAuthorized 
-                ? `
-                  <button class="done-btn" onclick="markDone('${task.id}')">${task.status === 'منجزة' ? '✔️' : 'إنهاء'}</button>
-                  <button class="del-btn" onclick="delTask('${task.id}')">حذف</button>
-                `
-                : `<span style="color:#888;font-size:13px;">غير متاح</span>`
-              }
-            </td>
-          </tr>
-        `;
-      });
-    }
-    function updateLockEmoji() {
-      const lockEmoji = document.getElementById('lockEmoji');
-      if (!lockEmoji) return;
-      lockEmoji.textContent = isAuthorized ? "🔓" : "🔒";
-    }
+
+    tbody2.innerHTML += `
+    
+      <tr>
+        <td>${task.building}</td>
+        <td>${task.floor}</td>
+        <td>${task.classroom}</td>
+        <td>${task.problem}</td>
+        <td>${assigneeSelect}</td>
+        <td>${delegateSelect}</td>
+        <td>
+  <button onclick="openNote('${task.id}', '${task.note ? task.note.replace(/'/g,"\\'") : ''}')"
+    title="إضافة/تعديل ملاحظة"
+    style="background:none; border:none; cursor:pointer; font-size:20px; color:#fbbf24;">
+    📝
+  </button>
+</td>
+        <td><span class="status ${task.status === 'منجزة' ? 'done' : 'todo'}">${task.status}</span></td>
+        <td class="controls">
+          ${isAuthorized 
+            ? `
+              <button class="done-btn" onclick="markDone('${task.id}')">${task.status === 'منجزة' ? '✔️' : 'إنهاء'}</button>
+              <button class="del-btn" onclick="delTask('${task.id}')">حذف</button>
+            `
+            : `<span style="color:#888;font-size:13px;">غير متاح</span>`
+          }
+        </td>
+      </tr>
+    `;
+  });
+}
+function updateLockEmoji() {
+  const lockEmoji = document.getElementById('lockEmoji');
+  if (!lockEmoji) return;
+  lockEmoji.textContent = isAuthorized ? "🔓" : "🔒";
+}
 
     function checkAssign(id, selectElem) {
       if (!isAuthorized) {
@@ -535,15 +564,16 @@
       updateAssignee(id, selectElem.value);
     }
     function logoutAdmin() {
-      isAuthorized = false;
-      document.getElementById("lockBtn").classList.remove("unlocked");
-      renderTasks(latestTasks);
-    }
-    window.logoutAdmin = logoutAdmin;
+  isAuthorized = false;
+  document.getElementById("lockBtn").classList.remove("unlocked");
+  renderTasks(latestTasks);
+}
+window.logoutAdmin = logoutAdmin;
 
     function markDone(id) {
       db.collection('tasks').doc(id).update({ status: 'منجزة' });
     }
+ 
     function updateAssignee(id, val) {
       db.collection('tasks').doc(id).update({ assignee: val });
     }
@@ -551,86 +581,94 @@
     window.delTask = delTask;
     window.checkAssign = checkAssign;
     window.updateAssignee = updateAssignee;
-    db.collection('tasks').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-      const tasks = [];
-      snapshot.forEach(doc => tasks.push({ ...doc.data(), id: doc.id }));
-      renderTasks(tasks);
-      updateLockEmoji();
-    });
-    function updateDelegate(id, val) {
-      db.collection('tasks').doc(id).update({ delegate: val });
-    }
-    function openNote(id, currentNote) {
-      if (!isAuthorized) {
-        openModal();
-        return;
-      }
-      Swal.fire({
-        title: 'ملاحظة للطلب',
-        input: 'textarea',
-        inputLabel: 'اكتب ملاحظتك أو التحديث هنا',
-        inputValue: currentNote || '',
-        showCancelButton: true,
-        confirmButtonText: 'حفظ',
-        cancelButtonText: 'إلغاء',
-        inputAttributes: {
-          dir: 'rtl',
-          style: 'min-height:70px;font-family:Cairo,Tahoma,Arial,sans-serif;font-size:15px;'
-        }
-      }).then((result) => {
-        if (result.isConfirmed) {
-          db.collection('tasks').doc(id).update({ note: result.value });
-          Swal.fire({
-            icon: 'success',
-            title: 'تم الحفظ',
-            timer: 1200,
-            showConfirmButton: false
-          });
-        }
-      });
-    }
-    window.openNote = openNote;
+db.collection('tasks').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+  const tasks = [];
+  snapshot.forEach(doc => tasks.push({ ...doc.data(), id: doc.id }));
+  renderTasks(tasks);
+  updateLockEmoji();
+});
 
-    function delTask(id) {
-      if (!isAuthorized) {
-        openModal();
-        return;
-      }
+    //  مكلّف بها
+  function updateAssignee(id, val) {
+    db.collection('tasks').doc(id).update({ assignee: val });
+  }
+  //  التفويض
+  function updateDelegate(id, val) {
+    db.collection('tasks').doc(id).update({ delegate: val });
+  }
+  function openNote(id, currentNote) {
+  if (!isAuthorized) {
+    openModal();
+    return;
+  }
+  Swal.fire({
+    title: 'ملاحظة للطلب',
+    input: 'textarea',
+    inputLabel: 'اكتب ملاحظتك أو التحديث هنا',
+    inputValue: currentNote || '',
+    showCancelButton: true,
+    confirmButtonText: 'حفظ',
+    cancelButtonText: 'إلغاء',
+    inputAttributes: {
+      dir: 'rtl',
+      style: 'min-height:70px;font-family:Cairo,Tahoma,Arial,sans-serif;font-size:15px;'
+    }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      db.collection('tasks').doc(id).update({ note: result.value });
       Swal.fire({
-        title: 'تأكيد الحذف',
-        text: 'هل أنت متأكد أنك تريد حذف هذا الطلب نهائيًا؟',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'نعم، احذف',
-        cancelButtonText: 'إلغاء'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          db.collection('tasks').doc(id).delete();
-          Swal.fire({
-            icon: 'success',
-            title: 'تم الحذف',
-            text: 'تم حذف الطلب بنجاح!',
-            timer: 1500,
-            showConfirmButton: false
-          });
-        }
+        icon: 'success',
+        title: 'تم الحفظ',
+        timer: 1200,
+        showConfirmButton: false
       });
     }
-    function toggleLoginLock() {
-      if (isFormAuthorized) {
-        isFormAuthorized = false;
-        document.getElementById('loginLockIcon').textContent = '🔒';
-        enableFormInputs(false);
-      } else {
-        openLoginModal();
-      }
+  });
+}
+window.openNote = openNote;
+
+  function delTask(id) {
+  if (!isAuthorized) {
+    openModal();
+    return;
+  }
+  Swal.fire({
+    title: 'تأكيد الحذف',
+    text: 'هل أنت متأكد أنك تريد حذف هذا الطلب نهائيًا؟',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'نعم، احذف',
+    cancelButtonText: 'إلغاء'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      db.collection('tasks').doc(id).delete();
+      Swal.fire({
+        icon: 'success',
+        title: 'تم الحذف',
+        text: 'تم حذف الطلب بنجاح!',
+        timer: 1500,
+        showConfirmButton: false
+      });
     }
-    window.delTask = delTask;
-    window.updateAssignee = updateAssignee;
-    window.updateDelegate = updateDelegate;
-    window.markDone = markDone;
+  });
+}
+function toggleLoginLock() {
+  if (isFormAuthorized) {
+    isFormAuthorized = false;
+    document.getElementById('loginLockIcon').textContent = '🔒';
+    enableFormInputs(false);
+  } else {
+    openLoginModal();
+  }
+}
+
+  window.delTask = delTask;
+  window.updateAssignee = updateAssignee;
+  window.updateDelegate = updateDelegate;
+  window.markDone = markDone;
+
   </script>
 </body>
 </html>
