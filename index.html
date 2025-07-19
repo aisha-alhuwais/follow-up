@@ -249,27 +249,6 @@
 
   <!-- Firebase Config & JS -->
   <script>
-    const assigneeEmails = {
-      "عائشه الحويس": "aishah.alhuwais@ku.edu.kw",
-      "محمد وهبة": "mohamed.wahba@ku.edu.kw",
-      "شيخة الغريب": "shekha.alghareb@ku.edu.kw",
-      "دلال العتيبي": "dalal.alotaibi@ku.edu.kw",
-      "نورية سالم": "noreyah.salem@ku.edu.kw",
-      "غنيمة بشاره": "ghanimah.r@ku.edu.kw",
-      "ارافيند موهان": "ad.mn@ku.edu.kw",
-      "مريم العلي": "m.alali@ku.edu.kw"
-    };
-    const assigneeWhatsapp = {
-  "عائشه الحويس": "96599095985",
-  "محمد وهبة": "96599534433",
-  "شيخة الغريب": "96594949417",
-  "دلال العتيبي": "96555779703",
-  "نورية سالم": "96566150708",
-  "غنيمة بشاره": "96566600434",
-  "ارافيند موهان": "96597775702",
-  "مريم العلي": "96565551239"
-};
-    
     const firebaseConfig = {
       apiKey: "AIzaSyDqMFfWwtzXInusoxsJxgEO5_ptz_fRk6E",
       authDomain: "itu-coa.firebaseapp.com",
@@ -288,16 +267,30 @@
      const delegateOptions = [
       "", "عائشه الحويس","محمد وهبة", "شيخة الغريب", "دلال العتيبي", "نورية سالم", "غنيمة بشاره", "ارافيند موهان", "مريم العلي"
   ];
-    
+    let whatsappNumbers = {};
+
+db.collection('whatsapp_numbers').get().then(snapshot => {
+  snapshot.forEach(doc => {
+    whatsappNumbers[doc.data().name] = doc.data().number;
+  });
+});
+
     let isAuthorized = false;
     let latestTasks = [];
     let isFormAuthorized = false;
     const PASSWORD = "art@4231"
-    const allowedUsers = [ { username: "22101186", password: "art@4231"},
-      { username: "20203110", password: "art@3110"},
-      { username: "21301189", password: "art@1189"},
-      { username: "22301615", password: "art@1615"},
-      { username: "admin", password: "art@25"} ];
+ 
+    let allowedUsers = [];
+
+function loadAllowedUsers() {
+  return db.collection('allowed_users').get().then(snapshot => {
+    allowedUsers = [];
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      allowedUsers.push({ username: data.username, password: data.password });
+    });
+  });
+}
 
     function openModal() {
       document.getElementById("modalBg").classList.add("active");
@@ -364,8 +357,8 @@ function submitModalPw() {
 
 window.onload = function() {
   enableFormInputs(false);
+  loadAllowedUsers();
 };
-
     window.openModal = openModal;
     window.closeModal = closeModal;
     window.submitModalPw = submitModalPw;
@@ -441,7 +434,7 @@ function enableFormInputs(enable = true) {
   tbody2.innerHTML = '';
   tasks.forEach(task => {
     let whatsappIcon = '';
-    if (isAuthorized && task.assignee && assigneeWhatsapp[task.assignee]) {
+    if (isAuthorized && task.assignee && whatsappNumbers[task.assignee]) {
       const message = encodeURIComponent(
         `السلام عليكم ورحمة الله وبركاته،
 
@@ -459,7 +452,7 @@ function enableFormInputs(enable = true) {
  
  وحدة تكنولوجيا المعلومات `
       );
-      const waNum = assigneeWhatsapp[task.assignee];
+      const waNum = whatsappNumbers[task.assignee];
       whatsappIcon = `<a href="https://wa.me/${waNum}?text=${message}" target="_blank" title="إرسال عبر واتساب" style="margin-right:2px;vertical-align:middle;">
         <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:23px;height:23px;">
       </a>`;
@@ -472,7 +465,7 @@ function enableFormInputs(enable = true) {
     assigneeSelect += `</select>${whatsappIcon}`;
 
     let waDelegateIcon = "";
-const waDelegateNum = assigneeWhatsapp[task.delegate];
+const waDelegateNum = whatsappNumbers[task.delegate];
 if (isAuthorized && waDelegateNum)  {
   const waDelegateMsg = encodeURIComponent(
     `السلام عليكم ورحمة الله وبركاته،
