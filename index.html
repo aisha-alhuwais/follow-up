@@ -45,74 +45,12 @@
     }
     .field-box { display: flex; flex-direction: column; gap: 2px; margin-bottom: 6px; }
     .lock-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      position: absolute;
-      left: 16px;
-      top: 7px;
-      padding: 0;
-      margin: 0;
+      background: none; border: none; cursor: pointer;
+      position: absolute; left: 16px; top: 7px; padding: 0; margin: 0;
       transition: filter 0.15s;
     }
     .lock-btn svg { width: 27px; height: 27px; vertical-align: middle; }
     .lock-btn.unlocked svg { filter: drop-shadow(0 0 3px #10b981) brightness(1.4); }
-    .modal-bg {
-      display: none;
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.27);
-      z-index: 9999;
-      align-items: center;
-      justify-content: center;
-    }
-    .modal-bg.active { display: flex; }
-    .modal-box {
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 2px 16px #0003;
-      padding: 28px 18px 22px 18px;
-      max-width: 340px;
-      width: 96vw;
-      text-align: center;
-      font-family: 'Cairo', Tahoma, Arial, sans-serif;
-    }
-    .modal-box input[type="password"] {
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      font-size: 16px;
-      margin-top: 8px;
-      width: 90%;
-      font-family: 'Cairo', Tahoma, Arial, sans-serif;
-      text-align: center;
-      letter-spacing: 2px;
-      margin-bottom: 14px;
-    }
-    .modal-box button {
-      padding: 8px 26px;
-      border-radius: 8px;
-      border: none;
-      background: #2563eb;
-      color: #fff;
-      font-size: 16px;
-      font-family: 'Cairo', Tahoma, Arial, sans-serif;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s;
-      margin-top: 5px;
-    }
-    .modal-box button:hover { background: #1d4ed8; }
-    .modal-close {
-      background: none;
-      border: none;
-      color: #888;
-      position: absolute;
-      top: 13px;
-      right: 19px;
-      font-size: 23px;
-      cursor: pointer;
-    }
-    .modal-err { color: #ef4444; font-size: 15px; min-height: 23px; margin-bottom: 2px;}
   </style>
 </head>
 <body>
@@ -120,23 +58,18 @@
     <h2 style="display: flex; align-items: center; justify-content: space-between;">
       <span>إضافة طلب جديد</span>
       <span style="display: flex; align-items: center; gap: 7px;">
-        <button 
-          onclick="window.open('classes.html', '_blank')" 
+        <button onclick="window.open('classes.html', '_blank')" 
           style="display: flex; align-items: center; gap: 7px;
-                font-family: 'Cairo', Tahoma, Arial, sans-serif;
-                background: #2563eb; color: #fff; border: none; border-radius: 10px;
-                padding: 7px 18px; font-size: 16px; font-weight: 700; cursor: pointer;
-                box-shadow: 0 2px 6px #0002; transition: background 0.2s;"
+                 font-family: 'Cairo', Tahoma, Arial, sans-serif;
+                 background: #2563eb; color: #fff; border: none; border-radius: 10px;
+                 padding: 7px 18px; font-size: 16px; font-weight: 700; cursor: pointer;
+                 box-shadow: 0 2px 6px #0002; transition: background 0.2s;"
           onmouseover="this.style.background='#1d4ed8'"
           onmouseout="this.style.background='#2563eb'"
-          title="عرض الجدول الرئيسي"
-        >الفصول الدراسية</button>
-        <button 
-          id="loginLockBtn"
-          onclick="toggleLoginLock()"
-          style="background:none; border:none; cursor:pointer; font-size:22px; margin-right:4px;"
-          title="تسجيل الدخول لإضافة طلب جديد"
-        ><span id="loginLockIcon">🔒</span></button>
+          title="عرض الجدول الرئيسي">القاعات الدراسية</button>
+        <button id="loginLockBtn" onclick="toggleLoginLock()" style="background:none; border:none; cursor:pointer; font-size:22px; margin-right:4px;" title="تسجيل الدخول لإضافة طلب جديد">
+          <span id="loginLockIcon">🔒</span>
+        </button>
       </span>
     </h2>
     <form id="addTaskForm" autocomplete="off">
@@ -173,8 +106,8 @@
           </select>
         </div>
         <div class="field-box">
-          <label for="classroom">الفصل</label>
-          <input type="text" id="classroom" placeholder="رقم الفصل/المكتب" required disabled/>
+          <label for="classroom">القاعة</label>
+          <input type="text" id="classroom" placeholder="رقم القاعة/المكتب" required disabled/>
         </div>
       </div>
       <div class="field-box" style="margin-top:10px;">
@@ -191,7 +124,7 @@
           <th>المرسل</th>
           <th>المبنى</th>
           <th>الدور</th>
-          <th>الفصل</th>
+          <th>القاعة</th>
           <th>المشكلة</th>
         </tr>
       </thead>
@@ -210,7 +143,7 @@
         <tr>
           <th>المبنى</th>
           <th>الدور</th>
-          <th>الفصل</th>
+          <th>القاعة</th>
           <th>المشكلة</th>
           <th>مكلّف بها</th>
           <th>تفويض إلى</th>
@@ -221,16 +154,6 @@
       </thead>
       <tbody id="taskList"></tbody>
     </table>
-  </div>
-  <div class="modal-bg" id="modalBg">
-    <div class="modal-box" dir="rtl" style="position:relative;">
-      <button class="modal-close" onclick="closeModal()">&times;</button>
-      <h3 style="margin-top:2px;margin-bottom:12px;font-weight:900;font-size:22px;color:#1e293b;">Password</h3>
-      <div class="modal-err" id="modalErr"></div>
-      <input type="password" id="modalPw" placeholder="كلمة السر..." autocomplete="off" />
-      <br>
-      <button onclick="submitModalPw()">دخول</button>
-    </div>
   </div>
   <script>
     const firebaseConfig = {
@@ -258,10 +181,7 @@
       });
     });
 
-    let isAuthorized = false;
-    let latestTasks = [];
     let isFormAuthorized = false;
-
     let allowedUsers = [];
     let allowedUsersLoaded = false;
 
@@ -278,7 +198,6 @@
         Swal.fire("خطأ", "فشل تحميل المستخدمين: " + error.message, "error");
       });
     }
-
     function openLoginModal() {
       if (allowedUsersLoaded && allowedUsers.length > 0) {
         showLoginDialog();
@@ -290,7 +209,6 @@
         });
       }
     }
-
     function showLoginDialog() {
       Swal.fire({
         title: 'تسجيل الدخول',
@@ -330,50 +248,110 @@
         }
       });
     }
-
-    window.onload = function() {
-      enableFormInputs(false);
-      loadAllowedUsers();
-    };
-
-    function openModal() {
-      document.getElementById("modalBg").classList.add("active");
-      document.getElementById("modalPw").value = "";
-      document.getElementById("modalErr").textContent = "";
-      setTimeout(()=>{ document.getElementById("modalPw").focus(); }, 200);
+    function enableFormInputs(enable = true) {
+      document.getElementById('sender').disabled = !enable;
+      document.getElementById('building').disabled = !enable;
+      document.getElementById('floor').disabled = !enable;
+      document.getElementById('classroom').disabled = !enable;
+      document.getElementById('problem').disabled = !enable;
+      document.querySelector('.add-btn-row button').disabled = !enable;
     }
-
-    function closeModal() {
-      document.getElementById("modalBg").classList.remove("active");
-    }
-
-    function submitModalPw() {
-      const pw = document.getElementById("modalPw").value.trim();
-      if (pw === "art@4231") {
-        isAuthorized = true;
-        closeModal();
-        renderTasks(latestTasks);
-        updateLockEmoji();
+    function toggleLoginLock() {
+      if (isFormAuthorized) {
+        isFormAuthorized = false;
+        document.getElementById('loginLockIcon').textContent = '🔒';
+        enableFormInputs(false);
       } else {
-        document.getElementById("modalErr").textContent = "كلمة السر غير صحيحة!";
+        openLoginModal();
       }
     }
 
+    // متابعة الطلب 
+    let isAdmin = false;
+    let adminUsers = [];
+    let adminUsersLoaded = false;
+
+    function loadAdminUsers() {
+      return db.collection('admin_users').get().then(snapshot => {
+        adminUsers = [];
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          adminUsers.push({ username: String(data.username).trim(), password: String(data.password).trim() });
+        });
+        adminUsersLoaded = true;
+      }).catch(error => {
+        adminUsersLoaded = false;
+        Swal.fire("خطأ", "فشل تحميل المستخدمين: " + error.message, "error");
+      });
+    }
+
+    function openAdminLogin() {
+      if (adminUsersLoaded && adminUsers.length > 0) {
+        showAdminLogin();
+      } else {
+        Swal.fire({title: 'جاري تحميل المستخدمين...', didOpen: () => Swal.showLoading()});
+        loadAdminUsers().then(() => {
+          Swal.close();
+          showAdminLogin();
+        });
+      }
+    }
+    function showAdminLogin() {
+      Swal.fire({
+        title: 'تسجيل الدخول (Admin)',
+        html: `
+          <input id="swal-admin-username" class="swal2-input" placeholder="اسم المستخدم" dir="rtl">
+          <input id="swal-admin-password" type="password" class="swal2-input" placeholder="كلمة السر" dir="rtl">
+        `,
+        confirmButtonText: 'دخول',
+        showCancelButton: true,
+        cancelButtonText: 'إلغاء',
+        preConfirm: () => {
+          const username = document.getElementById('swal-admin-username').value.trim();
+          const password = document.getElementById('swal-admin-password').value;
+          if (!username || !password) {
+            Swal.showValidationMessage('يرجى إدخال اسم المستخدم وكلمة السر');
+            return false;
+          }
+          const found = adminUsers.some(u => u.username === username && u.password === password);
+          if (found) {
+            return { username, password };
+          } else {
+            Swal.showValidationMessage('اسم المستخدم أو كلمة السر غير صحيحة');
+            return false;
+          }
+        }
+      }).then((result) => {
+        if (result.isConfirmed && result.value) {
+          Swal.fire({
+            icon: 'success',
+            title: 'تم تسجيل الدخول بنجاح!',
+            timer: 1000,
+            showConfirmButton: false
+          });
+          isAdmin = true;
+          renderTasks(latestTasks);
+          updateLockEmoji();
+        }
+      });
+    }
     document.getElementById('lockBtn').onclick = function(e) {
       e.preventDefault();
-      if (!isAuthorized) {
-        openModal();
+      if (!isAdmin) {
+        openAdminLogin();
       } else {
-        isAuthorized = false;
+        isAdmin = false;
         renderTasks(latestTasks);
         updateLockEmoji();
       }
     };
+    function updateLockEmoji() {
+      const lockEmoji = document.getElementById('lockEmoji');
+      if (lockEmoji) lockEmoji.textContent = isAdmin ? "🔓" : "🔒";
+    }
 
-    document.getElementById('modalPw').addEventListener('keydown', function(e){
-      if(e.key === "Enter"){ submitModalPw(); }
-    });
-
+    // Firebase Task Render 
+    let latestTasks = [];
     document.getElementById('addTaskForm').onsubmit = async function(e) {
       e.preventDefault();
       const sender = document.getElementById('sender').value;
@@ -390,25 +368,12 @@
       });
       this.reset();
     };
-
-    function checkDelegate(id, selectElem) {
-      if (!isAuthorized) {
-        openModal();
-        selectElem.value = "";
-        return;
-      }
-      updateDelegate(id, selectElem.value);
-    }
-    window.checkDelegate = checkDelegate;
-
-    function enableFormInputs(enable = true) {
-      document.getElementById('sender').disabled = !enable;
-      document.getElementById('building').disabled = !enable;
-      document.getElementById('floor').disabled = !enable;
-      document.getElementById('classroom').disabled = !enable;
-      document.getElementById('problem').disabled = !enable;
-      document.querySelector('.add-btn-row button').disabled = !enable;
-    }
+    db.collection('tasks').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+      const tasks = [];
+      snapshot.forEach(doc => tasks.push({ ...doc.data(), id: doc.id }));
+      renderTasks(tasks);
+      updateLockEmoji();
+    });
 
     function renderTasks(tasks) {
       latestTasks = tasks;
@@ -425,12 +390,11 @@
           </tr>
         `;
       });
-
       const tbody2 = document.getElementById('taskList');
       tbody2.innerHTML = '';
       tasks.forEach(task => {
         let whatsappIcon = '';
-        if (isAuthorized && task.assignee && whatsappNumbers[task.assignee]) {
+        if (isAdmin && task.assignee && whatsappNumbers[task.assignee]) {
           const message = encodeURIComponent(
             `السلام عليكم ورحمة الله وبركاته،
 
@@ -439,7 +403,7 @@
 المبنى: ${task.building}
 الدور: ${task.floor}
 الفصل/المكتب: ${task.classroom}
-المشكلة: ${task.problem }
+المشكلة: ${task.problem}
 
 يرجى التفضل باتخاذ اللازم في أقرب وقت ممكن، مع التكرم بإفادتنا بما تم اتخاذه من إجراءات.
 
@@ -453,16 +417,14 @@
             <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:23px;height:23px;">
           </a>`;
         }
-
-        let assigneeSelect = `<select onchange="checkAssign('${task.id}', this)" style="font-size:14px;border-radius:6px;padding:3px; font-family:'Cairo',Tahoma,Arial,sans-serif;" ${isAuthorized ? "" : "disabled"}>`;
+        let assigneeSelect = `<select onchange="checkAssign('${task.id}', this)" style="font-size:14px;border-radius:6px;padding:3px; font-family:'Cairo',Tahoma,Arial,sans-serif;" ${isAdmin ? "" : "disabled"}>`;
         assigneeOptions.forEach(opt => {
           assigneeSelect += `<option${task.assignee===opt?' selected':''}>${opt}</option>`;
         });
         assigneeSelect += `</select>${whatsappIcon}`;
-
         let waDelegateIcon = "";
         const waDelegateNum = whatsappNumbers[task.delegate];
-        if (isAuthorized && waDelegateNum)  {
+        if (isAdmin && waDelegateNum)  {
           const waDelegateMsg = encodeURIComponent(
             `السلام عليكم ورحمة الله وبركاته،
 
@@ -484,13 +446,11 @@
             <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:23px;height:23px;">
           </a>`;
         }
-
-        let delegateSelect = `<select onchange="checkDelegate('${task.id}', this)" style="font-size:14px;border-radius:6px;padding:3px;" ${isAuthorized ? "" : "disabled"}>`;
+        let delegateSelect = `<select onchange="checkDelegate('${task.id}', this)" style="font-size:14px;border-radius:6px;padding:3px;" ${isAdmin ? "" : "disabled"}>`;
         delegateOptions.forEach(opt => {
           delegateSelect += `<option${task.delegate===opt?' selected':''}>${opt}</option>`;
         });
         delegateSelect += `</select>${waDelegateIcon}`;
-
         tbody2.innerHTML += `
           <tr>
             <td>${task.building}</td>
@@ -508,7 +468,7 @@
             </td>
             <td><span class="status ${task.status === 'منجزة' ? 'done' : 'todo'}">${task.status}</span></td>
             <td class="controls">
-              ${isAuthorized 
+              ${isAdmin 
                 ? `
                   <button class="done-btn" onclick="markDone('${task.id}')">${task.status === 'منجزة' ? '✔️' : 'إنهاء'}</button>
                   <button class="del-btn" onclick="delTask('${task.id}')">حذف</button>
@@ -520,49 +480,34 @@
         `;
       });
     }
-    function updateLockEmoji() {
-      const lockEmoji = document.getElementById('lockEmoji');
-      if (!lockEmoji) return;
-      lockEmoji.textContent = isAuthorized ? "🔓" : "🔒";
-    }
-
     function checkAssign(id, selectElem) {
-      if (!isAuthorized) {
-        openModal();
+      if (!isAdmin) {
+        openAdminLogin();
         selectElem.value = ""; 
         return;
       }
       updateAssignee(id, selectElem.value);
     }
-    function logoutAdmin() {
-      isAuthorized = false;
-      document.getElementById("lockBtn").classList.remove("unlocked");
-      renderTasks(latestTasks);
+    function checkDelegate(id, selectElem) {
+      if (!isAdmin) {
+        openAdminLogin();
+        selectElem.value = "";
+        return;
+      }
+      updateDelegate(id, selectElem.value);
     }
-    window.logoutAdmin = logoutAdmin;
-
     function markDone(id) {
       db.collection('tasks').doc(id).update({ status: 'منجزة' });
     }
     function updateAssignee(id, val) {
       db.collection('tasks').doc(id).update({ assignee: val });
     }
-    window.markDone = markDone;
-    window.delTask = delTask;
-    window.checkAssign = checkAssign;
-    window.updateAssignee = updateAssignee;
-    db.collection('tasks').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
-      const tasks = [];
-      snapshot.forEach(doc => tasks.push({ ...doc.data(), id: doc.id }));
-      renderTasks(tasks);
-      updateLockEmoji();
-    });
     function updateDelegate(id, val) {
       db.collection('tasks').doc(id).update({ delegate: val });
     }
     function openNote(id, currentNote) {
-      if (!isAuthorized) {
-        openModal();
+      if (!isAdmin) {
+        openAdminLogin();
         return;
       }
       Swal.fire({
@@ -589,11 +534,9 @@
         }
       });
     }
-    window.openNote = openNote;
-
     function delTask(id) {
-      if (!isAuthorized) {
-        openModal();
+      if (!isAdmin) {
+        openAdminLogin();
         return;
       }
       Swal.fire({
@@ -618,19 +561,19 @@
         }
       });
     }
-    function toggleLoginLock() {
-      if (isFormAuthorized) {
-        isFormAuthorized = false;
-        document.getElementById('loginLockIcon').textContent = '🔒';
-        enableFormInputs(false);
-      } else {
-        openLoginModal();
-      }
-    }
+
+    window.onload = function() {
+      enableFormInputs(false);
+      loadAllowedUsers();
+      loadAdminUsers();
+    };
     window.delTask = delTask;
     window.updateAssignee = updateAssignee;
     window.updateDelegate = updateDelegate;
     window.markDone = markDone;
+    window.checkAssign = checkAssign;
+    window.checkDelegate = checkDelegate;
+    window.openNote = openNote;
   </script>
 </body>
 </html>
