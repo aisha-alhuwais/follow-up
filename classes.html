@@ -256,18 +256,16 @@ function showLogin() {
     }
   }).then((result) => {
 
-    Swal.fire({
-  title: '✅ تم الحفظ بنجاح',
-  icon: 'success',
-  timer: 1100,
-  showConfirmButton: false
-}).then(() => {
-  window.location.href = "Report.html";
-});
-
-
-  if (result.isConfirmed) {
-  window.location.href = "https://www.google.com";
+    if (result.isConfirmed) {
+      // تظهر رسالة نجاح، ثم تحول مباشرة
+      Swal.fire({
+        title: '✅ تم تسجيل الدخول بنجاح',
+        icon: 'success',
+        timer: 1200,
+        showConfirmButton: false
+      }).then(() => {
+        window.location.href = "follow-up/Report.html";
+      });
 }
 
   });
