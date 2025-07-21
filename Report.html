@@ -238,7 +238,6 @@ function showLogin() {
         Swal.showValidationMessage('أدخل جميع البيانات');
         return false;
       }
-      // البحث في قاعدة البيانات it_team
       const querySnapshot = await db.collection("it_team")
         .where("username", "==", username)
         .where("password", "==", password)
