@@ -101,11 +101,11 @@
   <!-- زر القفل-->
 <div style="display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 16px;">
     <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;">جدول القاعات الدراسية</h1>
-  <span id="lockIcon"
-        style="font-size:2.3em;cursor:pointer;transition:0.2s;"
-        title="تغيير حالة القفل"
-        onclick="toggleLock()">
-    🔒
+<span id="userIcon"
+    style="font-size:2.2em;cursor:pointer;position:absolute;top:60px;left:70px;z-index:11;"
+    title="اختر المستخدم"
+        onclick="showLogin()">
+    👤
   </span>
 </div>
   <!-- البحث  -->
@@ -124,6 +124,12 @@
     <button class="add-btn filter-btn" id="addClassBtn" onclick="addClassFlow()" disabled>
     إضافة قاعة دراسية +
   </button>
+      <span id="lockIcon"
+        style="font-size:2.1em;cursor:pointer;transition:0.2s;margin-right:6px;"
+        title="تغيير حالة القفل"
+        onclick="toggleLock()">
+    🔒
+  </span>
 </div>
 
  <div class="table-responsive" style="overflow-x:auto; width:100%;">
@@ -223,6 +229,49 @@ function renderTable() {
     tbody.innerHTML += row;
   });
 }
+function showLogin() {
+  Swal.fire({
+    title: 'تسجيل دخول الفريق',
+    html: `<input id="swal-username" class="swal2-input" placeholder="اسم المستخدم">
+           <input id="swal-password" type="password" class="swal2-input" placeholder="كلمة المرور">`,
+    confirmButtonText: 'دخول',
+    showCancelButton: true,
+    preConfirm: async () => {
+      const username = document.getElementById('swal-username').value;
+      const password = document.getElementById('swal-password').value;
+      if (!username || !password) {
+        Swal.showValidationMessage('أدخل جميع البيانات');
+        return false;
+      }
+      const querySnapshot = await db.collection("it_team")
+        .where("username", "==", username)
+        .where("password", "==", password)
+        .get();
+      if (!querySnapshot.empty) {
+        return true;
+      } else {
+        Swal.showValidationMessage('اسم المستخدم أو كلمة المرور غير صحيحة');
+        return false;
+      }
+    }
+  }).then((result) => {
+
+    Swal.fire({
+  title: '✅ تم الحفظ بنجاح',
+  icon: 'success',
+  timer: 1100,
+  showConfirmButton: false
+}).then(() => {
+  window.location.href = "Report.html";
+});
+
+
+  if (result.isConfirmed) {
+  window.location.href = "https://www.google.com";
+}
+
+  });
+}
 
 function filterByBuilding(building) {
   currentBuildingFilter = building;
@@ -240,26 +289,36 @@ function toggleLock() {
     isLocked = true;
     document.getElementById("addClassBtn").setAttribute("disabled", "true");
     document.getElementById("lockIcon").textContent = "🔒";
-    document.getElementById("lockBtn").innerHTML = '<span id="lockIcon" style="font-size:1.2em;">🔒</span> قفل';
   } else {
     Swal.fire({
-      title: 'أدخل الرقم السري',
-      input: 'password',
-      inputPlaceholder: '****',
+      title: 'تسجيل الدخول (Admin)',
+      html: `<input id="swal-username" class="swal2-input" placeholder="اسم المستخدم">
+             <input id="swal-password" type="password" class="swal2-input" placeholder="كلمة المرور">`,
+      confirmButtonText: 'دخول',
       showCancelButton: true,
-      confirmButtonText: 'فتح',
-      cancelButtonText: 'إلغاء',
-      preConfirm: (pass) => {
-        if (pass === "4231") return true;
-        Swal.showValidationMessage('الرقم السري غير صحيح');
-        return false;
+      preConfirm: () => {
+        const username = document.getElementById('swal-username').value;
+        const password = document.getElementById('swal-password').value;
+        if (!username || !password) {
+          Swal.showValidationMessage('أدخل البيانات');
+          return false;
+        }
+        return { username, password };
       }
-    }).then((result) => {
-      if (result.isConfirmed) {
-        isLocked = false;
-        document.getElementById("addClassBtn").removeAttribute("disabled");
-        document.getElementById("lockIcon").textContent = "🔓";
-        document.getElementById("lockBtn").innerHTML = '<span id="lockIcon" style="font-size:1.2em;">🔓</span> فتح';
+    }).then(async (result) => {
+      if (result.isConfirmed && result.value) {
+        const q = await db.collection("admin_users")
+          .where("username", "==", result.value.username)
+          .where("password", "==", result.value.password)
+          .get();
+        if (!q.empty) {
+          isLocked = false;
+          document.getElementById("addClassBtn").removeAttribute("disabled");
+          document.getElementById("lockIcon").textContent = "🔓";
+          Swal.fire('تم فتح القفل!', '', 'success');
+        } else {
+          Swal.fire('بيانات غير صحيحة', 'تحقق من اسم المستخدم أو كلمة المرور', 'error');
+        }
       }
     });
   }
@@ -271,7 +330,7 @@ function addClassFlow() {
 
 function openAddSwal() {
   Swal.fire({
-    title: 'إضافة فصل دراسي',
+    title: `<div style="font-weight:900; font-size:1.3em; color:#1a3765; margin-bottom:5px; letter-spacing:1px;">➕ إضافة قاعة دراسية</div>`,
     width: 900,
     customClass: {
       popup: 'swal-wide-modal'
@@ -331,9 +390,6 @@ function openAddSwal() {
           <label style="font-weight:700;">السعة</label>
           <input id="swal-cap" class="swal2-input" placeholder="عدد المقاعد" required>
         </div>
-      </div>
-      <hr style="margin:15px 0;">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
         <div>
           <label style="font-weight:700;">بوديوم</label>
           <select id="swal-podium" class="swal2-input" style="width:100%;">
@@ -372,46 +428,44 @@ function openAddSwal() {
         <div>
           <label style="font-weight:700;">جهاز العرض</label>
           <select id="swal-proj2" class="swal2-input" style="width:100%;">
-              <option>شغال</option>
+            <option>شغال</option>
             <option>قيد الصيانة</option>
             <option>غير شغال</option>
             <option>-</option>
           </select>
         </div>
-         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:14px;">
-    <div>
-      <label style="font-weight:700;">الميكروفون</label>
-      <select id="swal-mic" class="swal2-input" style="width:100%;">
+        <div>
+          <label style="font-weight:700;">الميكروفون</label>
+          <select id="swal-mic" class="swal2-input" style="width:100%;">
             <option>شغال</option>
             <option>قيد الصيانة</option>
             <option>غير شغال</option>
             <option>-</option>
-      </select>
-    </div>
-    <div>
-      <label style="font-weight:700;">الإضاءة</label>
-      <select id="swal-light" class="swal2-input" style="width:100%;">
-             <option>شغال</option>
-            <option>قيد الصيانة</option>
-            <option>غير شغال</option>
-            <option>-</option>
-      </select>
-    </div>
-    <div>
-      <label style="font-weight:700;">الستائر</label>
-      <select id="swal-curtain" class="swal2-input" style="width:100%;">
-         <option>شغال</option>
-            <option>قيد الصيانة</option>
-            <option>غير شغال</option>
-            <option>-</option>
-      </select>
-    </div>
-  </div>
+          </select>
+        </div>
         <div>
+          <label style="font-weight:700;">الإضاءة</label>
+          <select id="swal-light" class="swal2-input" style="width:100%;">
+            <option>شغال</option>
+            <option>قيد الصيانة</option>
+            <option>غير شغال</option>
+            <option>-</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-weight:700;">الستائر</label>
+          <select id="swal-curtain" class="swal2-input" style="width:100%;">
+            <option>شغال</option>
+            <option>قيد الصيانة</option>
+            <option>غير شغال</option>
+            <option>-</option>
+          </select>
+        </div>
+        <div style="grid-column:1/-1;">
           <label style="font-weight:700;">ملاحظات</label>
           <textarea id="swal-remark" class="swal2-textarea" 
             placeholder="اكتب أي ملاحظة هنا"
-            style="width:190%;min-height:34px;max-height:100px;resize:vertical;text-align:right;"></textarea>
+            style="width:80%;min-height:34px;max-height:100px;resize:vertical;text-align:right;"></textarea>
         </div>
       </div>`,
     confirmButtonText: 'إضافة',
