@@ -101,12 +101,13 @@
   <!-- زر القفل-->
 <div style="display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 16px;">
     <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;">جدول القاعات الدراسية</h1>
-     <span id="userIcon"
-        style="font-size:2em;cursor:pointer;"
-        title="اختر المستخدم"
-        onclick="showLogin()">
-        👤
-    </span>
+<span id="userIcon"
+  style="font-size:2em;cursor:pointer;"
+  title="تسجيل دخول الفريق"
+  onclick="showTeamLogin()">
+  👤
+</span>
+
 </div>
   <!-- البحث  -->
   <div class="search-group" style="display:flex;flex-direction:column;align-items:center;margin-bottom:18px;">
@@ -225,9 +226,53 @@ function renderTable() {
     tbody.innerHTML += row;
   });
 }
+function showTeamLogin() {
+  Swal.fire({
+    title: 'تسجيل دخول الفريق',
+    html: `<input id="swal-username" class="swal2-input" placeholder="اسم المستخدم">
+           <input id="swal-password" type="password" class="swal2-input" placeholder="كلمة المرور">`,
+    confirmButtonText: 'دخول',
+    showCancelButton: true,
+    preConfirm: async () => {
+      const username = document.getElementById('swal-username').value.trim();
+      const password = document.getElementById('swal-password').value.trim();
+      if (!username || !password) {
+        Swal.showValidationMessage('أدخل جميع البيانات');
+        return false;
+      }
+      const teamSnapshot = await db.collection("it_team")
+        .where("username", "==", username)
+        .where("password", "==", password)
+        .get();
+      if (!teamSnapshot.empty) {
+        Swal.fire({
+          title: 'تم تسجيل دخول الفريق بنجاح',
+          icon: 'success',
+          timer: 1200,
+          showConfirmButton: false
+        });
+        return true;
+      }
+      else if (result.isConfirmed && result.value === "team") {
+  Swal.fire({
+    title: 'تم تسجيل الدخول بنجاح (فريق فقط، لا توجد صلاحية إضافة)', 
+    icon: 'info',
+    timer: 1000,
+    showConfirmButton: false
+  }).then(() => {
+    window.location.href = "Report.html";
+  });
+}
+
+      Swal.showValidationMessage('اسم المستخدم أو كلمة المرور غير صحيحة');
+      return false;
+    }
+  });
+}
+
 function showLogin() {
   Swal.fire({
-    title: 'تسجيل دخول (ِAdmin)',
+    title: 'تسجيل دخول (Admin)',
     html: `<input id="swal-username" class="swal2-input" placeholder="اسم المستخدم">
            <input id="swal-password" type="password" class="swal2-input" placeholder="كلمة المرور">`,
     confirmButtonText: 'دخول',
