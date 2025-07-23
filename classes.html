@@ -255,12 +255,12 @@ function showTeamLogin() {
       }
       else if (result.isConfirmed && result.value === "team") {
   Swal.fire({
-    title: 'تم تسجيل الدخول بنجاح (فريق فقط، لا توجد صلاحية إضافة)', 
+    title: 'مو الإضافه - تم تسجيل دخول الفريق بنجاح', 
     icon: 'info',
     timer: 1000,
     showConfirmButton: false
   }).then(() => {
-    window.location.href = "Report.html";
+    window.location.href = "report.html";
   });
 }
 
