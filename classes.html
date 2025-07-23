@@ -226,7 +226,7 @@ function renderTable() {
     tbody.innerHTML += row;
   });
 }
-function showTeamLogin() {
+  function showTeamLogin() {
   Swal.fire({
     title: 'تسجيل دخول الفريق',
     html: `<input id="swal-username" class="swal2-input" placeholder="اسم المستخدم">
@@ -245,30 +245,18 @@ function showTeamLogin() {
         .where("password", "==", password)
         .get();
       if (!teamSnapshot.empty) {
-        Swal.fire({
-          title: 'تم تسجيل دخول الفريق بنجاح',
-          icon: 'success',
-          timer: 1200,
-          showConfirmButton: false
-        });
         return true;
       }
-      else if (result.isConfirmed && result.value === "team") {
-  Swal.fire({
-    title: 'مو الإضافه - تم تسجيل دخول الفريق بنجاح', 
-    icon: 'info',
-    timer: 1000,
-    showConfirmButton: false
-  }).then(() => {
-    window.location.href = "report.html";
-  });
-}
-
       Swal.showValidationMessage('اسم المستخدم أو كلمة المرور غير صحيحة');
       return false;
     }
+  }).then((result) => {
+    if (result.isConfirmed && result.value === true) {
+      window.location.href = "https://aisha-alhuwais.github.io/follow-up/report.html";
+    }
   });
 }
+
 
 function showLogin() {
   Swal.fire({
