@@ -684,22 +684,21 @@ function addClassFlow() {
     }
   }).then(async (result) => {
     if (result.isConfirmed && result.value) {
+      console.log("Document ID:", id, result.value);
       await db.collection(collectionName).doc(id).update({
         ...result.value,
-        last_edited_by: currentUser || username,
+        last_edited_by: currentUser || "غير معروف",
         last_edited_at: new Date().toISOString()
-      });
-      loadTable();
-      Swal.fire({
-        title: '✅ تم الحفظ بنجاح',
-        icon: 'success',
-        timer: 1100,
-        showConfirmButton: false
+      })
+      .then(() => {
+        Swal.fire('✅ تم الحفظ بنجاح', '', 'success');
+      })
+      .catch((e) => {
+        Swal.fire('خطأ', e.message, 'error');
       });
     }
   });
 }
-
   document.addEventListener("DOMContentLoaded", loadTable);
 
 </script>
