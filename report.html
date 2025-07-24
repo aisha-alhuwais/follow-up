@@ -135,6 +135,7 @@
             <th>الميكروفون</th>
             <th>الإضاءة </th>
             <th>الستائر</th>
+            <th>المكلف</th>
             <th>ملاحظات</th>
           </tr>
         </thead>
@@ -158,7 +159,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const collectionName = "classes";
-let currentUser = ""
+let currentUser = localStorage.getItem("currentUser") || "";
 let allClasses = [];
 let currentBuildingFilter = "الشمالي"; 
 let isLocked = true;
@@ -207,7 +208,7 @@ function renderTable() {
 
   tbody.innerHTML = "";
   if (filtered.length === 0) {
-    tbody.innerHTML = "<tr><td colspan='12'>لا توجد بيانات</td></tr>";
+    tbody.innerHTML = "<tr><td colspan='17'>لا توجد بيانات</td></tr>";
     return;
   }
 filtered.forEach((d, idx) => {
@@ -226,6 +227,7 @@ filtered.forEach((d, idx) => {
     <td>${d.mic || ""}</td>
     <td>${d.light || ""}</td>
     <td>${d.curtain || ""}</td>
+    <td>${d.last_edited_by || ""}</td>
     <td>${d.remark || ""}</td>
     <td>
       <button onclick="editClass('${d.id || ""}')" style="background:#eef; color:#002147; border-radius:6px; padding:5px 10px; border:none; cursor:pointer; font-size:1em;">
@@ -237,7 +239,8 @@ filtered.forEach((d, idx) => {
 });
 
 }
-function showLogin() {
+
+  function showLogin() {
   Swal.fire({
     title: 'تسجيل دخول الفريق',
     html: `<input id="swal-username" class="swal2-input" placeholder="اسم المستخدم">
@@ -257,6 +260,7 @@ function showLogin() {
         .get();
       if (!querySnapshot.empty) {
         currentUser = username;
+        localStorage.setItem("currentUser", username); // حفظ في localStorage
         return true;
       } else {
         Swal.showValidationMessage('اسم المستخدم أو كلمة المرور غير صحيحة');
@@ -265,18 +269,14 @@ function showLogin() {
     }
   }).then((result) => {
     if (result.isConfirmed) {
-      // إذا نجح الدخول افتح الرابط أو اعرض الزر
       Swal.fire({
         title: 'تم تسجيل الدخول بنجاح!',
-        html: `<a href="https://YOUR-LINK-HERE" target="_blank" style="color:#227;">الدخول إلى النظام</a>`,
         icon: 'success'
       });
-      // أو استخدم window.location.href = "https://YOUR-LINK-HERE";
     }
   });
 }
-
-function filterByBuilding(building) {
+  function filterByBuilding(building) {
   currentBuildingFilter = building;
   document.getElementById("northBtn").classList.remove("active");
   document.getElementById("southBtn").classList.remove("active");
@@ -500,7 +500,11 @@ function addClassFlow() {
     }
   }).then((result) => {
     if (result.isConfirmed && result.value) {
-      db.collection("classes").add(result.value)
+      db.collection("classes").add({
+        ...result.value,
+        last_edited_by: currentUser || "غير معروف",
+        last_edited_at: new Date().toISOString()
+      })
       .then(() => {
         Swal.fire('تمت الإضافة!', 'تم إضافة الفصل بنجاح', 'success');
         loadTable();
@@ -684,7 +688,6 @@ function addClassFlow() {
     }
   }).then(async (result) => {
     if (result.isConfirmed && result.value) {
-      console.log("Document ID:", id, result.value);
       await db.collection(collectionName).doc(id).update({
         ...result.value,
         last_edited_by: currentUser || "غير معروف",
