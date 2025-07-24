@@ -160,8 +160,21 @@ const db = firebase.firestore();
 const collectionName = "classes";
 let currentUser = ""
 let allClasses = [];
-let currentBuildingFilter = "الشمالي"; // افتراضي على الشمالي
+let currentBuildingFilter = "الشمالي"; 
 let isLocked = true;
+  
+const userMap = {
+  "الشمالي-G": "mohan",
+  "الشمالي-1": "noriya",
+  "الشمالي-2": "noriya",
+  "الشمالي-3": "mohan",
+  "الشمالي-4": "mohan",
+  "الجنوبي-G": "mohammed",
+  "الجنوبي-1": "maryam",
+  "الجنوبي-2": "ganima",
+  "الجنوبي-3": "shikha",
+  "الجنوبي-4": "dalal"
+};
 
 // تحميل البيانات
 function loadTable() {
@@ -676,6 +689,7 @@ function addClassFlow() {
         last_edited_by: currentUser || username,
         last_edited_at: new Date().toISOString()
       });
+      loadTable();
       Swal.fire({
         title: '✅ تم الحفظ بنجاح',
         icon: 'success',
