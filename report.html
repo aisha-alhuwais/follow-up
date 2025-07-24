@@ -135,7 +135,6 @@
             <th>الميكروفون</th>
             <th>الإضاءة </th>
             <th>الستائر</th>
-            <th>المكلف</th>
             <th>ملاحظات</th>
           </tr>
         </thead>
@@ -191,13 +190,22 @@ snapshot.forEach(doc => {
   });
 }
 
+  function getAllowedRolesForUser(username) {
+  return Object.entries(userMap)
+    .filter(([key, value]) => value === username)
+    .map(([key, value]) => key);
+}
 function renderTable() {
   const tbody = document.getElementById('tableBody');
   const searchTerm = document.getElementById('searchInput').value.trim();
   let filtered = allClasses;
 
+  if (currentUser && currentUser !== "admin") {
+    const allowedRoles = getAllowedRolesForUser(currentUser);
+    filtered = filtered.filter(d => allowedRoles.includes(`${d.building}-${d.floor}`));
+  }
   if (searchTerm) {
-    filtered = allClasses.filter(d =>
+    filtered = filtered.filter(d =>
       (d.no && d.no.toString().includes(searchTerm)) ||
       (d.type && d.type.includes(searchTerm)) ||
       (d.remark && d.remark.includes(searchTerm))
@@ -206,38 +214,34 @@ function renderTable() {
     filtered = filtered.filter(d => (d.building || "").trim() === currentBuildingFilter);
   }
 
-  tbody.innerHTML = "";
+ tbody.innerHTML = "";
   if (filtered.length === 0) {
-    tbody.innerHTML = "<tr><td colspan='17'>لا توجد بيانات</td></tr>";
+    tbody.innerHTML = "<tr><td colspan='15'>لا توجد بيانات</td></tr>";
     return;
   }
 filtered.forEach((d, idx) => {
-  const row = `<tr>
-    <td>${d.status || ""}</td>
-    <td>${d.building || ""}</td>
-    <td>${d.floor || ""}</td>
-    <td>${d.type || ""}</td>
-    <td>${d.no || ""}</td>
-    <td>${d.cap || ""}</td>
-    <td>${d.podium || ""}</td>
-    <td>${d.pc || ""}</td>
-    <td>${d.network || ""}</td>
-    <td>${d.proj1 || ""}</td>
-    <td>${d.proj2 || ""}</td>
-    <td>${d.mic || ""}</td>
-    <td>${d.light || ""}</td>
-    <td>${d.curtain || ""}</td>
-    <td>${d.last_edited_by || ""}</td>
-    <td>${d.remark || ""}</td>
-    <td>
-      <button onclick="editClass('${d.id || ""}')" style="background:#eef; color:#002147; border-radius:6px; padding:5px 10px; border:none; cursor:pointer; font-size:1em;">
-        ✏️
-      </button>
-    </td>
-  </tr>`;
-  tbody.innerHTML += row;
-});
-
+    const canEdit = currentUser && getAllowedRolesForUser(currentUser).includes(`${d.building}-${d.floor}`);
+    const editBtn = canEdit ? `<button onclick="editClass('${d.id}')">✏️</button>` : '';
+    const row = `<tr>
+      <td>${d.status || ""}</td>
+      <td>${d.building || ""}</td>
+      <td>${d.floor || ""}</td>
+      <td>${d.type || ""}</td>
+      <td>${d.no || ""}</td>
+      <td>${d.cap || ""}</td>
+      <td>${d.podium || ""}</td>
+      <td>${d.pc || ""}</td>
+      <td>${d.network || ""}</td>
+      <td>${d.proj1 || ""}</td>
+      <td>${d.proj2 || ""}</td>
+      <td>${d.mic || ""}</td>
+      <td>${d.light || ""}</td>
+      <td>${d.curtain || ""}</td>
+      <td>${d.remark || ""}</td>
+      <td>${editBtn}</td>
+    </tr>`;
+    tbody.innerHTML += row;
+  });
 }
 
   function showLogin() {
@@ -688,6 +692,7 @@ function addClassFlow() {
     }
   }).then(async (result) => {
     if (result.isConfirmed && result.value) {
+      console.log("Document ID:", id, result.value);
       await db.collection(collectionName).doc(id).update({
         ...result.value,
         last_edited_by: currentUser || "غير معروف",
