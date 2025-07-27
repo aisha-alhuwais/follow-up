@@ -200,10 +200,6 @@ function renderTable() {
   const searchTerm = document.getElementById('searchInput').value.trim();
   let filtered = allClasses;
 
-  if (currentUser && currentUser !== "admin") {
-    const allowedRoles = getAllowedRolesForUser(currentUser);
-    filtered = filtered.filter(d => allowedRoles.includes(`${d.building}-${d.floor}`));
-  }
   if (searchTerm) {
     filtered = filtered.filter(d =>
       (d.no && d.no.toString().includes(searchTerm)) ||
@@ -220,8 +216,10 @@ function renderTable() {
     return;
   }
 filtered.forEach((d, idx) => {
-    const canEdit = currentUser && getAllowedRolesForUser(currentUser).includes(`${d.building}-${d.floor}`);
-    const editBtn = canEdit ? `<button onclick="editClass('${d.id}')">✏️</button>` : '';
+ const isAdmin = currentUser === "admin";
+const allowedRoles = getAllowedRolesForUser(currentUser);
+const canEdit = isAdmin || allowedRoles.includes(`${d.building}-${d.floor}`);
+const editBtn = canEdit ? `<button onclick="editClass('${d.id}')">✏️</button>` : '';
     const row = `<tr>
       <td>${d.status || ""}</td>
       <td>${d.building || ""}</td>
