@@ -100,7 +100,7 @@
 
   <!-- زر القفل-->
 <div style="display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 16px;">
-    <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;">جدول القاعات الدراسية</h1>
+    <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;">تقرير عن القاعات الدراسية</h1>
 </div>
   <!-- البحث  -->
   <div class="search-group" style="display:flex;flex-direction:column;align-items:center;margin-bottom:18px;">
@@ -211,41 +211,40 @@ function renderTable() {
     filtered = filtered.filter(d => (d.building || "").trim() === currentBuildingFilter);
   }
 
- tbody.innerHTML = "";
+  tbody.innerHTML = "";
   if (filtered.length === 0) {
     tbody.innerHTML = "<tr><td colspan='15'>لا توجد بيانات</td></tr>";
     return;
   }
-filtered.forEach((d, idx) => {
-  const isAdmin = currentUser === "admin";
-  const allowedRoles = getAllowedRolesForUser(currentUser); 
-  const roleKey = `${d.building}-${d.floor}`;
-  const canEdit = isAdmin || allowedRoles.includes(roleKey);
-  const editBtn = canEdit
-    ? `<button onclick="editClass('${d.id}')" style="font-size:1.2em;cursor:pointer;" title="تعديل">✏️</button>`
-    : '';
-  const row = `<tr>
-    <td>${d.status || ""}</td>
-    <td>${d.building || ""}</td>
-    <td>${d.floor || ""}</td>
-    <td>${d.type || ""}</td>
-    <td>${d.no || ""}</td>
-    <td>${d.cap || ""}</td>
-    <td>${d.podium || ""}</td>
-    <td>${d.pc || ""}</td>
-    <td>${d.network || ""}</td>
-    <td>${d.proj1 || ""}</td>
-    <td>${d.proj2 || ""}</td>
-    <td>${d.mic || ""}</td>
-    <td>${d.light || ""}</td>
-    <td>${d.curtain || ""}</td>
-    <td>${d.remark || ""}</td>
-    <td>${editBtn}</td>
-  </tr>`;
-  tbody.innerHTML += row;
-});
 
+  filtered.forEach((d, idx) => {
+    const isAdmin = currentUser === "admin";
+    const allowedRoles = getAllowedRolesForUser(currentUser).map(x => x.trim());
+    const key = `${(d.building||"").trim()}-${(d.floor||"").trim()}`;
+    const canEdit = isAdmin || allowedRoles.includes(key);
+    const editBtn = canEdit ? `<button onclick="editClass('${d.id}')">✏️</button>` : '';
+    const row = `<tr>
+      <td>${d.status || ""}</td>
+      <td>${d.building || ""}</td>
+      <td>${d.floor || ""}</td>
+      <td>${d.type || ""}</td>
+      <td>${d.no || ""}</td>
+      <td>${d.cap || ""}</td>
+      <td>${d.podium || ""}</td>
+      <td>${d.pc || ""}</td>
+      <td>${d.network || ""}</td>
+      <td>${d.proj1 || ""}</td>
+      <td>${d.proj2 || ""}</td>
+      <td>${d.mic || ""}</td>
+      <td>${d.light || ""}</td>
+      <td>${d.curtain || ""}</td>
+      <td>${d.remark || ""}</td>
+      <td>${editBtn}</td>
+    </tr>`;
+    tbody.innerHTML += row;
+  });
 }
+
 
   function showLogin() {
   Swal.fire({
