@@ -100,7 +100,7 @@
 
   <!-- زر القفل-->
 <div style="display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 16px;">
-    <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;">تقرير عن القاعات الدراسية</h1>
+    <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;">-تقرير عن القاعات الدراسية</h1>
 </div>
   <!-- البحث  -->
   <div class="search-group" style="display:flex;flex-direction:column;align-items:center;margin-bottom:18px;">
@@ -266,7 +266,7 @@ function renderTable() {
         .get();
       if (!querySnapshot.empty) {
         currentUser = username;
-        localStorage.setItem("currentUser", username); // حفظ في localStorage
+        localStorage.setItem("currentUser", currentUser);
         return true;
       } else {
         Swal.showValidationMessage('اسم المستخدم أو كلمة المرور غير صحيحة');
@@ -274,14 +274,15 @@ function renderTable() {
       }
     }
   }).then((result) => {
-    if (result.isConfirmed) {
-      Swal.fire({
-        title: 'تم تسجيل الدخول بنجاح!',
-        icon: 'success'
-      });
-    }
+   if (result.isConfirmed) {
+  Swal.fire({
+    title: 'تم تسجيل الدخول بنجاح!',
+    icon: 'success'
+  }).then(() => {
+    renderTable();  
   });
 }
+
   function filterByBuilding(building) {
   currentBuildingFilter = building;
   document.getElementById("northBtn").classList.remove("active");
