@@ -136,6 +136,7 @@
             <th>الإضاءة </th>
             <th>الستائر</th>
             <th>ملاحظات</th>
+            <th>📝</th>
           </tr>
         </thead>
         <tbody id="tableBody"></tbody>
@@ -175,6 +176,11 @@ const userMap = {
   "الجنوبي-3": "shikha",
   "الجنوبي-4": "dalal"
 };
+  function getAllowedRolesForUser(username) {
+  return Object.entries(userMap)
+    .filter(([key, value]) => value === username)
+    .map(([key, value]) => key);
+}
 
 // تحميل البيانات
 function loadTable() {
@@ -190,11 +196,6 @@ snapshot.forEach(doc => {
   });
 }
 
-  function getAllowedRolesForUser(username) {
-  return Object.entries(userMap)
-    .filter(([key, value]) => value === username)
-    .map(([key, value]) => key);
-}
 function renderTable() {
   const tbody = document.getElementById('tableBody');
   const searchTerm = document.getElementById('searchInput').value.trim();
@@ -216,30 +217,34 @@ function renderTable() {
     return;
   }
 filtered.forEach((d, idx) => {
- const isAdmin = currentUser === "admin";
-const allowedRoles = getAllowedRolesForUser(currentUser);
-const canEdit = isAdmin || allowedRoles.includes(`${d.building}-${d.floor}`);
-const editBtn = canEdit ? `<button onclick="editClass('${d.id}')">✏️</button>` : '';
-    const row = `<tr>
-      <td>${d.status || ""}</td>
-      <td>${d.building || ""}</td>
-      <td>${d.floor || ""}</td>
-      <td>${d.type || ""}</td>
-      <td>${d.no || ""}</td>
-      <td>${d.cap || ""}</td>
-      <td>${d.podium || ""}</td>
-      <td>${d.pc || ""}</td>
-      <td>${d.network || ""}</td>
-      <td>${d.proj1 || ""}</td>
-      <td>${d.proj2 || ""}</td>
-      <td>${d.mic || ""}</td>
-      <td>${d.light || ""}</td>
-      <td>${d.curtain || ""}</td>
-      <td>${d.remark || ""}</td>
-      <td>${editBtn}</td>
-    </tr>`;
-    tbody.innerHTML += row;
-  });
+  const isAdmin = currentUser === "admin";
+  const allowedRoles = getAllowedRolesForUser(currentUser); 
+  const roleKey = `${d.building}-${d.floor}`;
+  const canEdit = isAdmin || allowedRoles.includes(roleKey);
+  const editBtn = canEdit
+    ? `<button onclick="editClass('${d.id}')" style="font-size:1.2em;cursor:pointer;" title="تعديل">✏️</button>`
+    : '';
+  const row = `<tr>
+    <td>${d.status || ""}</td>
+    <td>${d.building || ""}</td>
+    <td>${d.floor || ""}</td>
+    <td>${d.type || ""}</td>
+    <td>${d.no || ""}</td>
+    <td>${d.cap || ""}</td>
+    <td>${d.podium || ""}</td>
+    <td>${d.pc || ""}</td>
+    <td>${d.network || ""}</td>
+    <td>${d.proj1 || ""}</td>
+    <td>${d.proj2 || ""}</td>
+    <td>${d.mic || ""}</td>
+    <td>${d.light || ""}</td>
+    <td>${d.curtain || ""}</td>
+    <td>${d.remark || ""}</td>
+    <td>${editBtn}</td>
+  </tr>`;
+  tbody.innerHTML += row;
+});
+
 }
 
   function showLogin() {
