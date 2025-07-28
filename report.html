@@ -100,7 +100,7 @@
 
   <!-- زر القفل-->
 <div style="display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 16px;">
-    <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;">test - تقرير عن القاعات الدراسية</h1>
+    <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;">تقرير عن القاعات الدراسية</h1>
 </div>
   <!-- البحث  -->
   <div class="search-group" style="display:flex;flex-direction:column;align-items:center;margin-bottom:18px;">
@@ -165,16 +165,16 @@ let currentBuildingFilter = "الشمالي";
 let isLocked = true;
   
 const userMap = {
-  "الشمالي-G": "212010551",
-  "الشمالي-1": "21009368",
-  "الشمالي-2": "21009368",
-  "الشمالي-3": "212010551",
-  "الشمالي-4": "212010551",
-  "الجنوبي-G": "20000204",
-  "الجنوبي-1": "22301615",
-  "الجنوبي-2": "212010015",
-  "الجنوبي-3": "20505172",
-  "الجنوبي-4": "20701901"
+  "الشمالي-G": "mohan",
+  "الشمالي-1": "noriya",
+  "الشمالي-2": "noriya",
+  "الشمالي-3": "mohan",
+  "الشمالي-4": "mohan",
+  "الجنوبي-G": "mohammed",
+  "الجنوبي-1": "maryam",
+  "الجنوبي-2": "ganima",
+  "الجنوبي-3": "shikha",
+  "الجنوبي-4": "dalal"
 };
   function getAllowedRolesForUser(username) {
   return Object.entries(userMap)
@@ -265,7 +265,8 @@ function renderTable() {
         .where("password", "==", password)
         .get();
       if (!querySnapshot.empty) {
-        currentUser = username;
+         const docId = querySnapshot.docs[0].id;
+         currentUser = docId;
         localStorage.setItem("currentUser", currentUser); 
         return true;
       } else {
