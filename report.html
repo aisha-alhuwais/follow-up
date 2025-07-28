@@ -88,6 +88,25 @@
       .filter-group { margin-left: 0; justify-content: flex-end; }
       .search-input { min-width: 120px; }
     }
+    .logout-btn {
+  background: #e54d4d;
+  color: #fff;
+  font-family: 'Cairo', Tahoma, Arial, sans-serif;
+  font-size: 1.05em;
+  font-weight: bold;
+  border: none;
+  padding: 12px 26px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: 0.13s;
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 6px #0001;
+}
+.logout-btn:hover,
+.logout-btn:focus {
+  background: #c0392b;
+}
   </style>
   
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -97,12 +116,10 @@
 </head>
 <body>
 <div class="container">
-
-  <!-- زر القفل-->
 <div style="display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 16px;">
-    <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;"> 📝 تقرير عن القاعات الدراسية</h1>
+    <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;">تقرير عن القاعات الدراسية</h1>
 </div>
-  <!-- البحث  -->
+ 
   <div class="search-group" style="display:flex;flex-direction:column;align-items:center;margin-bottom:18px;">
     <label style="font-size:1.1em;font-weight:600;margin-bottom:7px;"></label>
     <input type="text" id="searchInput" class="search-input" placeholder="أدخل رقم القاعة" oninput="renderTable()"/>
@@ -114,6 +131,7 @@
     <button id="northBtn" onclick="filterByBuilding('الشمالي')" class="filter-btn active">المبنى الشمالي</button>
     <button id="southBtn" onclick="filterByBuilding('الجنوبي')" class="filter-btn">المبنى الجنوبي</button>
   </div>
+<button onclick="logout()" class="logout-btn">تسجيل خروج</button>
 
      </div>
 
@@ -163,27 +181,8 @@ let currentUser = localStorage.getItem("currentUser") || "";
 let allClasses = [];
 let currentBuildingFilter = "الشمالي";
 let isLocked = true;
-
-const userMap = {
-  "الشمالي-G": "212010551",
-  "الشمالي-1": "21009368",
-  "الشمالي-2": "21009368",
-  "الشمالي-3": "212010551",
-  "الشمالي-4": "212010551",
-  "الجنوبي-G": "20000204",
-  "الجنوبي-1": "22301615",
-  "الجنوبي-2": "212010015",
-  "الجنوبي-3": "20505172",
-  "الجنوبي-4": "20701901"
-};
-
-function getAllowedRolesForUser(username) {
-  username = (username || "").trim();
-  return Object.entries(userMap)
-    .filter(([key, value]) => (value + "").trim() === username)
-    .map(([key]) => key);
-}
-
+let allowedRoles = JSON.parse(localStorage.getItem("allowedRoles") || "[]"); 
+  
 function loadTable() {
   db.collection(collectionName).onSnapshot(snapshot => {
     allClasses = [];
@@ -196,7 +195,7 @@ function loadTable() {
   });
 }
 
-function renderTable() {
+  function renderTable() {
   const tbody = document.getElementById('tableBody');
   const searchTerm = document.getElementById('searchInput').value.trim();
   let filtered = allClasses;
@@ -218,15 +217,11 @@ function renderTable() {
   }
 
   filtered.forEach((d, idx) => {
-    const isAdmin = currentUser === "admin";
-    const allowedRoles = getAllowedRolesForUser(currentUser).map(x => x.trim());
-    const key = `${(d.building||"").trim()}-${(d.floor||"").trim()}`;
-
-    const canEdit = isAdmin || allowedRoles.includes(key);
-
-    const editBtn = canEdit ? `<button onclick="editClass('${d.id}')">✏️</button>` : '';
-    const row = `<tr> 
-      <td>${d.status || ""}</td> 
+  const key = `${(d.building||"").trim()}-${(d.floor||"").trim()}`;
+  const canEdit = allowedRoles.includes(key) || currentUser === "admin";
+  const editBtn = `<button onclick="editClass('${d.id}')" title="تعديل" style="background:none;border:none;cursor:pointer;padding:0;margin:0;font-size:1.2em;">✏️</button>`;
+    const row = `<tr>
+      <td>${d.status || ""}</td>
       <td>${d.building || ""}</td>
       <td>${d.floor || ""}</td>
       <td>${d.type || ""}</td>
@@ -241,16 +236,12 @@ function renderTable() {
       <td>${d.light || ""}</td>
       <td>${d.curtain || ""}</td>
       <td>${d.remark || ""}</td>
-      <td>${editBtn}</td>
+      <td>${canEdit ? editBtn : ""}</td>
     </tr>`;
     tbody.innerHTML += row;
   });
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-  loadTable();
-  document.getElementById('searchInput').addEventListener('input', renderTable);
-});
 
 function showLogin() {
   Swal.fire({
@@ -273,9 +264,12 @@ function showLogin() {
       if (!querySnapshot.empty) {
         currentUser = username;
         localStorage.setItem("currentUser", currentUser);
+        let userData = querySnapshot.docs[0].data();
+        allowedRoles = userData.roles || []; 
+        localStorage.setItem("allowedRoles", JSON.stringify(allowedRoles));
         renderTable();
         return true;
-      } else {
+      }  else {
         Swal.showValidationMessage('اسم المستخدم أو كلمة المرور غير صحيحة');
         return false;
       }
@@ -711,6 +705,16 @@ function editClass(id) {
       });
     }
   });
+}
+function logout() {
+  localStorage.removeItem("currentUser");
+  localStorage.removeItem("allowedRoles");
+ if (window.history.length > 1) {
+    history.back();
+  } else {
+    window.location.href = "classes.html"; 
+  }
+}
 }
 
 document.addEventListener("DOMContentLoaded", loadTable);
