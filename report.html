@@ -222,14 +222,11 @@ function renderTable() {
     const allowedRoles = getAllowedRolesForUser(currentUser).map(x => x.trim());
     const key = `${(d.building||"").trim()}-${(d.floor||"").trim()}`;
 
-    console.log("currentUser:", currentUser, "| allowedRoles:", allowedRoles, "| key:", key);
-
-    // تحقق من صلاحية التعديل
     const canEdit = isAdmin || allowedRoles.includes(key);
 
     const editBtn = canEdit ? `<button onclick="editClass('${d.id}')">✏️</button>` : '';
-    const row = `<tr>
-      <td>${d.status || ""}</td>
+    const row = `<tr> 
+      <td>${d.status || ""}</td> 
       <td>${d.building || ""}</td>
       <td>${d.floor || ""}</td>
       <td>${d.type || ""}</td>
@@ -249,6 +246,11 @@ function renderTable() {
     tbody.innerHTML += row;
   });
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+  loadTable();
+  document.getElementById('searchInput').addEventListener('input', renderTable);
+});
 
 function showLogin() {
   Swal.fire({
