@@ -117,7 +117,7 @@
 <body>
 <div class="container">
 <div style="display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 16px;">
-    <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;">تقرير عن القاعات الدراسية</h1>
+    <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;">📝 تقرير عن القاعات الدراسية</h1>
 </div>
  
   <div class="search-group" style="display:flex;flex-direction:column;align-items:center;margin-bottom:18px;">
@@ -179,7 +179,7 @@ const db = firebase.firestore();
 const collectionName = "classes";
 let currentUser = localStorage.getItem("currentUser") || "";
 let allClasses = [];
-let currentBuildingFilter = "الشمالي";
+let currentBuildingFilter = "all";
 let isLocked = true;
 let allowedRoles = JSON.parse(localStorage.getItem("allowedRoles") || "[]"); 
   
