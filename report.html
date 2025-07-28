@@ -100,7 +100,7 @@
 
   <!-- زر القفل-->
 <div style="display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 16px;">
-    <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;">تقرير عن القاعات الدراسية</h1>
+    <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;">📝 تقرير عن القاعات الدراسية</h1>
 </div>
   <!-- البحث  -->
   <div class="search-group" style="display:flex;flex-direction:column;align-items:center;margin-bottom:18px;">
@@ -165,21 +165,22 @@ let currentBuildingFilter = "الشمالي";
 let isLocked = true;
   
 const userMap = {
-  "الشمالي-G": "mohan",
-  "الشمالي-1": "noriya",
-  "الشمالي-2": "noriya",
-  "الشمالي-3": "mohan",
-  "الشمالي-4": "mohan",
-  "الجنوبي-G": "mohammed",
-  "الجنوبي-1": "maryam",
-  "الجنوبي-2": "ganima",
-  "الجنوبي-3": "shikha",
-  "الجنوبي-4": "dalal"
+  "الشمالي-G": "212010551",
+  "الشمالي-1": "21009368",
+  "الشمالي-2": "21009368",
+  "الشمالي-3": "212010551",
+  "الشمالي-4": "212010551",
+  "الجنوبي-G": "20000204",
+  "الجنوبي-1": "22301615",
+  "الجنوبي-2": "212010015",
+  "الجنوبي-3": "20505172",
+  "الجنوبي-4": "20701901"
 };
   function getAllowedRolesForUser(username) {
+  username = (username || "").trim();
   return Object.entries(userMap)
-    .filter(([key, value]) => value === username)
-    .map(([key, value]) => key);
+    .filter(([key, value]) => (value+"").trim() === username)
+    .map(([key]) => key);
 }
 
 // تحميل البيانات
@@ -221,8 +222,7 @@ function renderTable() {
     const isAdmin = currentUser === "admin";
     const allowedRoles = getAllowedRolesForUser(currentUser).map(x => x.trim());
     const key = `${(d.building||"").trim()}-${(d.floor||"").trim()}`;
-    console.log("currentUser:", currentUser, "allowedRoles:", allowedRoles, "key:", key);
-
+    console.log("currentUser:", currentUser, "| allowedRoles:", allowedRoles, "| key:", key);
     const canEdit = isAdmin || allowedRoles.includes(key);
     const editBtn = canEdit ? `<button onclick="editClass('${d.id}')">✏️</button>` : '';
     const row = `<tr>
@@ -256,21 +256,20 @@ function renderTable() {
     confirmButtonText: 'دخول',
     showCancelButton: true,
     preConfirm: async () => {
-      const username = document.getElementById('swal-username').value;
+      const username = document.getElementById('swal-username').value.trim();
       const password = document.getElementById('swal-password').value;
       if (!username || !password) {
         Swal.showValidationMessage('أدخل جميع البيانات');
         return false;
       }
-      const querySnapshot = await db.collection("it_team")
+    const querySnapshot = await db.collection("it_team")
         .where("username", "==", username)
         .where("password", "==", password)
         .get();
       if (!querySnapshot.empty) {
-         const docId = querySnapshot.docs[0].id;
-         currentUser = docId;
-        localStorage.setItem("currentUser", currentUser); 
-        return true;
+         currentUser = username;
+         localStorage.setItem("currentUser", currentUser); 
+         return true;
       } else {
         Swal.showValidationMessage('اسم المستخدم أو كلمة المرور غير صحيحة');
         return false;
