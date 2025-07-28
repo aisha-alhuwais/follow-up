@@ -100,7 +100,7 @@
 
   <!-- زر القفل-->
 <div style="display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 16px;">
-    <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;">📝 تقرير عن القاعات الدراسية</h1>
+    <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;">تقرير عن القاعات الدراسية</h1>
 </div>
   <!-- البحث  -->
   <div class="search-group" style="display:flex;flex-direction:column;align-items:center;margin-bottom:18px;">
@@ -161,9 +161,9 @@ const db = firebase.firestore();
 const collectionName = "classes";
 let currentUser = localStorage.getItem("currentUser") || "";
 let allClasses = [];
-let currentBuildingFilter = "الشمالي"; 
+let currentBuildingFilter = "الشمالي";
 let isLocked = true;
-  
+
 const userMap = {
   "الشمالي-G": "212010551",
   "الشمالي-1": "21009368",
@@ -176,23 +176,22 @@ const userMap = {
   "الجنوبي-3": "20505172",
   "الجنوبي-4": "20701901"
 };
-  function getAllowedRolesForUser(username) {
+
+function getAllowedRolesForUser(username) {
   username = (username || "").trim();
   return Object.entries(userMap)
-    .filter(([key, value]) => (value+"").trim() === username)
+    .filter(([key, value]) => (value + "").trim() === username)
     .map(([key]) => key);
 }
 
-// تحميل البيانات
 function loadTable() {
   db.collection(collectionName).onSnapshot(snapshot => {
     allClasses = [];
-snapshot.forEach(doc => {
-  let data = doc.data();
-  data.id = doc.id;   
-  allClasses.push(data);
-});
-
+    snapshot.forEach(doc => {
+      let data = doc.data();
+      data.id = doc.id;
+      allClasses.push(data);
+    });
     renderTable();
   });
 }
@@ -222,8 +221,12 @@ function renderTable() {
     const isAdmin = currentUser === "admin";
     const allowedRoles = getAllowedRolesForUser(currentUser).map(x => x.trim());
     const key = `${(d.building||"").trim()}-${(d.floor||"").trim()}`;
+
     console.log("currentUser:", currentUser, "| allowedRoles:", allowedRoles, "| key:", key);
+
+    // تحقق من صلاحية التعديل
     const canEdit = isAdmin || allowedRoles.includes(key);
+
     const editBtn = canEdit ? `<button onclick="editClass('${d.id}')">✏️</button>` : '';
     const row = `<tr>
       <td>${d.status || ""}</td>
@@ -247,8 +250,7 @@ function renderTable() {
   });
 }
 
-
-  function showLogin() {
+function showLogin() {
   Swal.fire({
     title: 'تسجيل دخول الفريق',
     html: `<input id="swal-username" class="swal2-input" placeholder="اسم المستخدم">
@@ -262,14 +264,15 @@ function renderTable() {
         Swal.showValidationMessage('أدخل جميع البيانات');
         return false;
       }
-    const querySnapshot = await db.collection("it_team")
+      const querySnapshot = await db.collection("it_team")
         .where("username", "==", username)
         .where("password", "==", password)
         .get();
       if (!querySnapshot.empty) {
-         currentUser = username;
-         localStorage.setItem("currentUser", currentUser); 
-         return true;
+        currentUser = username;
+        localStorage.setItem("currentUser", currentUser);
+        renderTable();
+        return true;
       } else {
         Swal.showValidationMessage('اسم المستخدم أو كلمة المرور غير صحيحة');
         return false;
@@ -281,10 +284,11 @@ function renderTable() {
         title: 'تم تسجيل الدخول بنجاح!',
         icon: 'success'
       });
+      renderTable();
     }
   });
 }
-  function filterByBuilding(building) {
+function filterByBuilding(building) {
   currentBuildingFilter = building;
   document.getElementById("northBtn").classList.remove("active");
   document.getElementById("southBtn").classList.remove("active");
@@ -334,20 +338,16 @@ function toggleLock() {
     });
   }
 }
-
 function addClassFlow() {
   openAddSwal();
 }
-
-  function openAddSwal() {
+function openAddSwal() {
   Swal.fire({
     title: `<div style="font-weight:900; font-size:1.3em; color:#1a3765; margin-bottom:5px; letter-spacing:1px;">➕ إضافة قاعة دراسية</div>`,
     width: 900,
-    customClass: {
-      popup: 'swal-wide-modal'
-    },
-    html:
-      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    customClass: { popup: 'swal-wide-modal' },
+    html: `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
         <div>
           <label style="font-weight:700;">الحالة</label>
           <select id="swal-status" class="swal2-input" style="width:100%;">
@@ -474,7 +474,7 @@ function addClassFlow() {
         </div>
         <div style="grid-column:1/-1;">
           <label style="font-weight:700;">ملاحظات</label>
-          <textarea id="swal-remark" class="swal2-textarea" 
+          <textarea id="swal-remark" class="swal2-textarea"
             placeholder="اكتب أي ملاحظة هنا"
             style="width:80%;min-height:34px;max-height:100px;resize:vertical;text-align:right;"></textarea>
         </div>
@@ -524,7 +524,7 @@ function addClassFlow() {
   });
 }
 
-  function editClass(id) {
+function editClass(id) {
   const docData = allClasses.find(x => x.id === id);
   if (!docData) return;
 
@@ -696,7 +696,6 @@ function addClassFlow() {
     }
   }).then(async (result) => {
     if (result.isConfirmed && result.value) {
-      console.log("Document ID:", id, result.value);
       await db.collection(collectionName).doc(id).update({
         ...result.value,
         last_edited_by: currentUser || "غير معروف",
@@ -711,8 +710,10 @@ function addClassFlow() {
     }
   });
 }
-  document.addEventListener("DOMContentLoaded", loadTable);
+
+document.addEventListener("DOMContentLoaded", loadTable);
 
 </script>
+
 </body>
 </html>
