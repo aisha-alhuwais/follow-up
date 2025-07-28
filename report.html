@@ -88,25 +88,7 @@
       .filter-group { margin-left: 0; justify-content: flex-end; }
       .search-input { min-width: 120px; }
     }
-    .logout-btn {
-  background: #e54d4d;
-  color: #fff;
-  font-family: 'Cairo', Tahoma, Arial, sans-serif;
-  font-size: 1.05em;
-  font-weight: bold;
-  border: none;
-  padding: 12px 26px;
-  border-radius: 14px;
-  cursor: pointer;
-  transition: 0.13s;
-  margin-bottom: 8px;
-  letter-spacing: 1px;
-  box-shadow: 0 2px 6px #0001;
-}
-.logout-btn:hover,
-.logout-btn:focus {
-  background: #c0392b;
-}
+    
   </style>
   
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -117,7 +99,7 @@
 <body>
 <div class="container">
 <div style="display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 16px;">
-    <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;">📝 تقرير عن القاعات الدراسية</h1>
+    <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;">تقرير عن القاعات الدراسية</h1>
 </div>
  
   <div class="search-group" style="display:flex;flex-direction:column;align-items:center;margin-bottom:18px;">
@@ -131,8 +113,6 @@
     <button id="northBtn" onclick="filterByBuilding('الشمالي')" class="filter-btn">المبنى الشمالي</button>
     <button id="southBtn" onclick="filterByBuilding('الجنوبي')" class="filter-btn">المبنى الجنوبي</button>
   </div>
-<button onclick="logout()" class="logout-btn">تسجيل خروج</button>
-
      </div>
 
  <div class="table-responsive" style="overflow-x:auto; width:100%;">
@@ -705,16 +685,6 @@ function editClass(id) {
       });
     }
   });
-}
-function logout() {
-  localStorage.removeItem("currentUser");
-  localStorage.removeItem("allowedRoles");
- if (window.history.length > 1) {
-    history.back();
-  } else {
-    window.location.href = "classes.html"; 
-  }
-}
 }
 
 document.addEventListener("DOMContentLoaded", loadTable);
