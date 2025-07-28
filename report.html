@@ -221,6 +221,8 @@ function renderTable() {
     const isAdmin = currentUser === "admin";
     const allowedRoles = getAllowedRolesForUser(currentUser).map(x => x.trim());
     const key = `${(d.building||"").trim()}-${(d.floor||"").trim()}`;
+    console.log("currentUser:", currentUser, "allowedRoles:", allowedRoles, "key:", key);
+
     const canEdit = isAdmin || allowedRoles.includes(key);
     const editBtn = canEdit ? `<button onclick="editClass('${d.id}')">✏️</button>` : '';
     const row = `<tr>
