@@ -690,7 +690,7 @@ function editClass(id) {
 function logout() {
   localStorage.removeItem("currentUser");
   localStorage.removeItem("allowedRoles");
-  location.reload();
+window.location.href = "c.html";
 }
 
 document.addEventListener("DOMContentLoaded", loadTable);
