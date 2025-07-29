@@ -174,7 +174,9 @@ function loadTable() {
     renderTable();
   });
 }
-
+console.log("Allowed roles:", allowedRoles);
+  
+  
   function renderTable() {
   const tbody = document.getElementById('tableBody');
   const searchTerm = document.getElementById('searchInput').value.trim();
