@@ -113,7 +113,6 @@
     <button id="northBtn" onclick="filterByBuilding('الشمالي')" class="filter-btn">المبنى الشمالي</button>
     <button id="southBtn" onclick="filterByBuilding('الجنوبي')" class="filter-btn">المبنى الجنوبي</button>
   </div>
-   <button onclick="logout()" class="filter-btn" style="background:#e54d4d;color:#fff;">تسجيل خروج</button>
      </div>
 
  <div class="table-responsive" style="overflow-x:auto; width:100%;">
@@ -687,15 +686,9 @@ function editClass(id) {
     }
   });
 }
-function logout() {
-  localStorage.removeItem("currentUser");
-  localStorage.removeItem("allowedRoles");
-  window.location.href = "classes.html";
-}
 
 document.addEventListener("DOMContentLoaded", loadTable);
 
 </script>
-
 </body>
 </html>
