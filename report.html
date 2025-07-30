@@ -175,12 +175,12 @@ function loadTable() {
   });
 }
 console.log("currentUser:", currentUser);
-  
-  
-  function renderTable() {
+
+function renderTable() {
   const tbody = document.getElementById('tableBody');
   const searchTerm = document.getElementById('searchInput').value.trim();
   let filtered = allClasses;
+  const normalizedRoles = allowedRoles.map(x => x.trim());
 
   if (searchTerm) {
     filtered = filtered.filter(d =>
@@ -199,9 +199,9 @@ console.log("currentUser:", currentUser);
   }
 
   filtered.forEach((d, idx) => {
-  const key = `${(d.building||"").trim()}-${(d.floor||"").trim()}`;
-  const canEdit = allowedRoles.includes(key) || currentUser === "admin";
-  const editBtn = `<button onclick="editClass('${d.id}')" title="تعديل" style="background:none;border:none;cursor:pointer;padding:0;margin:0;font-size:1.2em;">✏️</button>`;
+    const key = `${(d.building||"").trim()}-${(d.floor||"").trim()}`;
+    const canEdit = normalizedRoles.includes(key) || currentUser === "admin";
+    const editBtn = `<button onclick="editClass('${d.id}')" title="تعديل" style="background:none;border:none;cursor:pointer;padding:0;margin:0;font-size:1.2em;">✏️</button>`;
     const row = `<tr>
       <td>${d.status || ""}</td>
       <td>${d.building || ""}</td>
@@ -223,7 +223,6 @@ console.log("currentUser:", currentUser);
     tbody.innerHTML += row;
   });
 }
-
 
 function showLogin() {
   Swal.fire({
