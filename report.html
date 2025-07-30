@@ -689,7 +689,30 @@ function editClass(id) {
   });
 }
 
-document.addEventListener("DOMContentLoaded", loadTable);
+document.addEventListener("DOMContentLoaded", function() {
+  let storedUser = localStorage.getItem("currentUser");
+  if (storedUser) {
+    db.collection("it_team")
+      .where("username", "==", storedUser)
+      .get()
+      .then(snapshot => {
+        if (!snapshot.empty) {
+          let userData = snapshot.docs[0].data();
+          allowedRoles = userData.roles || [];
+          localStorage.setItem("allowedRoles", JSON.stringify(allowedRoles));
+          loadTable();
+        } else {
+          allowedRoles = [];
+          localStorage.setItem("allowedRoles", JSON.stringify([]));
+          loadTable();
+        }
+      });
+  } else {
+    allowedRoles = [];
+    localStorage.setItem("allowedRoles", JSON.stringify([]));
+    loadTable();
+  }
+});
 
 </script>
 </body>
