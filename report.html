@@ -174,7 +174,7 @@ function loadTable() {
     renderTable();
   });
 }
-console.log("Allowed roles:", allowedRoles);
+console.log("currentUser:", currentUser);
   
   
   function renderTable() {
@@ -700,7 +700,9 @@ document.addEventListener("DOMContentLoaded", function() {
           let userData = snapshot.docs[0].data();
           allowedRoles = userData.roles || [];
           localStorage.setItem("allowedRoles", JSON.stringify(allowedRoles));
-          loadTable();
+          renderTable();
+          console.log("AllowedRoles after login:", allowedRoles);
+
         } else {
           allowedRoles = [];
           localStorage.setItem("allowedRoles", JSON.stringify([]));
