@@ -5,92 +5,19 @@
   <title>جدول القاعات الدراسية</title>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    
-    .filter-btn {
-      background: #e5ebf1;
-      color: #0e223a;
-      border: none;
-      border-radius: 14px;
-      padding: 12px 26px;
-      font-family: 'Cairo', Tahoma, Arial, sans-serif;
-      font-weight: bold;
-      font-size: 1.05em;
-      transition: 0.13s;
-      cursor: pointer;
-    }
-    .filter-btn.active, .filter-btn:focus {
-      background: #002147 !important;
-      color: #fff !important;
-    }
-    .lock-btn {
-      background: #dde4ea;
-      color: #2c333a;
-      border: none;
-      border-radius: 12px;
-      padding: 7px 18px 7px 14px;
-      font-family: 'Cairo', Tahoma, Arial, sans-serif;
-      font-weight: bold;
-      font-size: 1.01em;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .add-btn[disabled] {
-      background: #b3bac2 !important;
-      color: #fff !important;
-      cursor: not-allowed !important;
-      opacity: 0.65;
-    }
     body { font-family: 'Cairo', Tahoma, Arial, sans-serif; background: #f7fafc; margin: 0; padding: 40px;}
     .container { max-width: 1100px; margin: auto; background: #fff; border-radius: 16px; box-shadow: 0 2px 16px #0001; padding: 28px;}
     h1 { color: #002147; margin-bottom: 24px;}
-   
-    .add-btn { background: #002147; color: #fff; border: none; border-radius: 8px; padding: 7px 22px; font-family: 'Cairo', Tahoma, Arial, sans-serif; font-weight: bold; font-size: 1.1em; margin-bottom: 18px; cursor: pointer;}
+    .filter-btn { background: #e5ebf1; color: #0e223a; border: none; border-radius: 14px; padding: 12px 26px; font-family: 'Cairo'; font-weight: bold; font-size: 1.05em; cursor: pointer; transition: 0.13s;}
+    .filter-btn.active, .filter-btn:focus { background: #002147 !important; color: #fff !important;}
     .table-responsive { overflow-x: auto; margin-top: 16px;}
     table { border-collapse: collapse; width: 100%; min-width: 950px;}
     th, td { border: 1px solid #dbeafe; padding: 7px 10px; text-align: center;}
     th { background: #002147; color: #fff;}
     tr:nth-child(even) td { background: #f3f6fa; }
-    .top-controls {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .filter-group {
-      display: flex;
-      gap: 12px;
-      margin-left: auto;
-    }
-    .search-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      justify-content: center;
-      flex: 1;
-    }
-    .search-input {
-      font-family:'Cairo';
-      padding: 9px 16px;
-      border-radius: 10px;
-      border: 1px solid #d3dce6;
-      min-width: 260px;
-      font-size: 1.15em;
-      text-align: center;
-      box-shadow: 0 2px 6px #0001;
-    }
-    @media (max-width: 700px) {
-      .top-controls { flex-direction: column; gap: 7px; }
-      .search-group { justify-content: flex-start; }
-      .filter-group { margin-left: 0; justify-content: flex-end; }
-      .search-input { min-width: 120px; }
-    }
-    
+    .search-input { font-family:'Cairo'; padding: 9px 16px; border-radius: 10px; border: 1px solid #d3dce6; min-width: 260px; font-size: 1.15em; text-align: center; box-shadow: 0 2px 6px #0001;}
+    @media (max-width: 700px) {.search-input { min-width: 120px; }}
   </style>
-  
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -98,53 +25,46 @@
 </head>
 <body>
 <div class="container">
-<div style="display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 16px;">
+  <div style="display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 16px;">
     <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;">تقرير عن القاعات الدراسية</h1>
-</div>
- 
+  </div>
   <div class="search-group" style="display:flex;flex-direction:column;align-items:center;margin-bottom:18px;">
-    <label style="font-size:1.1em;font-weight:600;margin-bottom:7px;"></label>
     <input type="text" id="searchInput" class="search-input" placeholder="أدخل رقم القاعة" oninput="renderTable()"/>
   </div>
-  
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;">
-  <div class="filter-group" style="display:flex; gap:12px;">
-    <button id="allBtn" onclick="filterByBuilding('all')" class="filter-btn active">✖</button>
-    <button id="northBtn" onclick="filterByBuilding('الشمالي')" class="filter-btn">المبنى الشمالي</button>
-    <button id="southBtn" onclick="filterByBuilding('الجنوبي')" class="filter-btn">المبنى الجنوبي</button>
-  </div>
-     </div>
-
- <div class="table-responsive" style="overflow-x:auto; width:100%;">
-      <table>
-        <thead>
-          <tr>
-            <th>الحالة</th>
-            <th>المبنى</th>
-            <th>الدور</th>
-            <th>نوع القاعة</th>
-            <th>رقم القاعة</th>
-            <th>السعة</th>
-            <th>بوديوم</th>
-            <th>الكمبيوتر</th>
-            <th>الشبكة</th>
-            <th>جهاز العرض</th>
-            <th>جهاز العرض</th>
-            <th>الميكروفون</th>
-            <th>الإضاءة </th>
-            <th>الستائر</th>
-            <th>ملاحظات</th>
-            <th>📝</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-      </table>
+    <div class="filter-group" style="display:flex; gap:12px;">
+      <button id="allBtn" onclick="filterByBuilding('all')" class="filter-btn active">✖</button>
+      <button id="northBtn" onclick="filterByBuilding('الشمالي')" class="filter-btn">المبنى الشمالي</button>
+      <button id="southBtn" onclick="filterByBuilding('الجنوبي')" class="filter-btn">المبنى الجنوبي</button>
     </div>
-  
   </div>
-
+  <div class="table-responsive" style="overflow-x:auto; width:100%;">
+    <table>
+      <thead>
+        <tr>
+          <th>الحالة</th>
+          <th>المبنى</th>
+          <th>الدور</th>
+          <th>نوع القاعة</th>
+          <th>رقم القاعة</th>
+          <th>السعة</th>
+          <th>بوديوم</th>
+          <th>الكمبيوتر</th>
+          <th>الشبكة</th>
+          <th>جهاز العرض</th>
+          <th>جهاز العرض</th>
+          <th>الميكروفون</th>
+          <th>الإضاءة </th>
+          <th>الستائر</th>
+          <th>ملاحظات</th>
+          <th>📝</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+</div>
 <script>
-// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyDqMFfWwtzXInusoxsJxgEO5_ptz_fRk6E",
   authDomain: "itu-coa.firebaseapp.com",
@@ -158,12 +78,11 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const collectionName = "classes";
 let currentUser = localStorage.getItem("currentUser") || "";
+let allowedRoles = JSON.parse(localStorage.getItem("allowedRoles") || "[]");
 let allClasses = [];
 let currentBuildingFilter = "all";
-let isLocked = true;
-let allowedRoles = JSON.parse(localStorage.getItem("allowedRoles") || "[]"); 
-  
-function loadTable() {
+
+  function loadTable() {
   db.collection(collectionName).onSnapshot(snapshot => {
     allClasses = [];
     snapshot.forEach(doc => {
@@ -174,17 +93,12 @@ function loadTable() {
     renderTable();
   });
 }
-console.log("currentUser:", currentUser);
 
 function renderTable() {
-  console.log("renderTable currentUser:", currentUser);
-  console.log("currentUser:", currentUser);
-console.log("allowedRoles:", allowedRoles);
   const tbody = document.getElementById('tableBody');
   const searchTerm = document.getElementById('searchInput').value.trim();
   let filtered = allClasses;
   const normalizedRoles = allowedRoles.map(x => x.trim());
-
   if (searchTerm) {
     filtered = filtered.filter(d =>
       (d.no && d.no.toString().includes(searchTerm)) ||
@@ -194,14 +108,12 @@ console.log("allowedRoles:", allowedRoles);
   } else if (currentBuildingFilter !== "all") {
     filtered = filtered.filter(d => (d.building || "").trim() === currentBuildingFilter);
   }
-
   tbody.innerHTML = "";
   if (filtered.length === 0) {
-    tbody.innerHTML = "<tr><td colspan='15'>لا توجد بيانات</td></tr>";
+    tbody.innerHTML = "<tr><td colspan='16'>لا توجد بيانات</td></tr>";
     return;
   }
-
-  filtered.forEach((d, idx) => {
+  filtered.forEach((d) => {
     const key = `${(d.building||"").trim()}-${(d.floor||"").trim()}`;
     const canEdit = normalizedRoles.includes(key) || currentUser === "admin";
     const editBtn = `<button onclick="editClass('${d.id}')" title="تعديل" style="background:none;border:none;cursor:pointer;padding:0;margin:0;font-size:1.2em;">✏️</button>`;
@@ -227,15 +139,18 @@ console.log("allowedRoles:", allowedRoles);
   });
 }
 
-function showLogin() {
-  currentUser = username;
-  localStorage.setItem("currentUser", currentUser);
-  let userData = querySnapshot.docs[0].data();
-  allowedRoles = userData.roles || []; 
-  localStorage.setItem("allowedRoles", JSON.stringify(allowedRoles));
-  console.log("currentUser after login:", currentUser);
+function filterByBuilding(building) {
+  currentBuildingFilter = building;
+  document.getElementById("northBtn").classList.remove("active");
+  document.getElementById("southBtn").classList.remove("active");
+  document.getElementById("allBtn").classList.remove("active");
+  if (building === "الشمالي") document.getElementById("northBtn").classList.add("active");
+  else if (building === "الجنوبي") document.getElementById("southBtn").classList.add("active");
+  else document.getElementById("allBtn").classList.add("active");
   renderTable();
+}
 
+function showLogin() {
   Swal.fire({
     title: 'تسجيل دخول الفريق',
     html: `<input id="swal-username" class="swal2-input" placeholder="اسم المستخدم">
@@ -254,33 +169,29 @@ function showLogin() {
         .where("password", "==", password)
         .get();
       if (!querySnapshot.empty) {
+        currentUser = username;
+        localStorage.setItem("currentUser", currentUser);
+        let userData = querySnapshot.docs[0].data();
+        allowedRoles = userData.roles || [];
+        localStorage.setItem("allowedRoles", JSON.stringify(allowedRoles));
+        console.log("✔️ تسجيل دخول صحيح", currentUser, allowedRoles);
         return true;
-      }  else {
+      } else {
         Swal.showValidationMessage('اسم المستخدم أو كلمة المرور غير صحيحة');
         return false;
       }
     }
   }).then((result) => {
-if (result.isConfirmed) {
-  Swal.fire({
-    title: 'تم تسجيل الدخول بنجاح!',
-    icon: 'success'
-  }).then(() => location.reload());
-}
+    if (result.isConfirmed) {
+      Swal.fire({
+        title: 'تم تسجيل الدخول بنجاح!',
+        icon: 'success'
+      }).then(() => location.reload());
+    }
   });
 }
-function filterByBuilding(building) {
-  currentBuildingFilter = building;
-  document.getElementById("northBtn").classList.remove("active");
-  document.getElementById("southBtn").classList.remove("active");
-  document.getElementById("allBtn").classList.remove("active");
-  if (building === "الشمالي") document.getElementById("northBtn").classList.add("active");
-  else if (building === "الجنوبي") document.getElementById("southBtn").classList.add("active");
-  else document.getElementById("allBtn").classList.add("active");
-  renderTable();
-}
 
-function toggleLock() {
+  function toggleLock() {
   if (!isLocked) {
     isLocked = true;
     document.getElementById("addClassBtn").setAttribute("disabled", "true");
@@ -506,6 +417,7 @@ function openAddSwal() {
 }
 
 function editClass(id) {
+  alert('نافذة التعديل هنا - كود التعديل يضاف مثل كودك السابق');
   const docData = allClasses.find(x => x.id === id);
   if (!docData) return;
 
@@ -696,29 +608,31 @@ document.addEventListener("DOMContentLoaded", function() {
   let storedUser = localStorage.getItem("currentUser");
   if (storedUser) {
     db.collection("it_team")
-      .where("username", "==", storedUser)
+      .where("username", "==", storedUser.trim())
       .get()
-.then(snapshot => {
-    if (!snapshot.empty) {
-      let userData = snapshot.docs[0].data();
-      console.log("userData from Firestore:", userData);
-      allowedRoles = userData.roles || [];
-      localStorage.setItem("allowedRoles", JSON.stringify(allowedRoles));
-      renderTable();
-    }
- else {
+      .then(snapshot => {
+        if (!snapshot.empty) {
+          let userData = snapshot.docs[0].data();
+          allowedRoles = userData.roles || [];
+          localStorage.setItem("allowedRoles", JSON.stringify(allowedRoles));
+          currentUser = storedUser;
+          console.log("✅ المستخدم موجود allowedRoles:", allowedRoles);
+          loadTable();
+        } else {
           allowedRoles = [];
           localStorage.setItem("allowedRoles", JSON.stringify([]));
-          loadTable();
+          currentUser = "";
+          console.warn("⚠️ لم يتم العثور على المستخدم - يرجى تسجيل الدخول");
+          showLogin();
         }
       });
   } else {
     allowedRoles = [];
     localStorage.setItem("allowedRoles", JSON.stringify([]));
-    loadTable();
+    currentUser = "";
+    showLogin();
   }
 });
-
 </script>
 </body>
 </html>
