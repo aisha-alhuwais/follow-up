@@ -203,7 +203,7 @@ console.log("allowedRoles:", allowedRoles);
 
   filtered.forEach((d, idx) => {
     const key = `${(d.building||"").trim()}-${(d.floor||"").trim()}`;
-    const canEdit = (currentUser && currentUser !== "");
+    const canEdit = normalizedRoles.includes(key) || currentUser === "admin";
     const editBtn = `<button onclick="editClass('${d.id}')" title="تعديل" style="background:none;border:none;cursor:pointer;padding:0;margin:0;font-size:1.2em;">✏️</button>`;
     const row = `<tr>
       <td>${d.status || ""}</td>
@@ -228,6 +228,14 @@ console.log("allowedRoles:", allowedRoles);
 }
 
 function showLogin() {
+  currentUser = username;
+  localStorage.setItem("currentUser", currentUser);
+  let userData = querySnapshot.docs[0].data();
+  allowedRoles = userData.roles || []; 
+  localStorage.setItem("allowedRoles", JSON.stringify(allowedRoles));
+  console.log("currentUser after login:", currentUser);
+  renderTable();
+
   Swal.fire({
     title: 'تسجيل دخول الفريق',
     html: `<input id="swal-username" class="swal2-input" placeholder="اسم المستخدم">
@@ -246,13 +254,6 @@ function showLogin() {
         .where("password", "==", password)
         .get();
       if (!querySnapshot.empty) {
-        currentUser = username;
-        localStorage.setItem("currentUser", currentUser);
-        let userData = querySnapshot.docs[0].data();
-        allowedRoles = userData.roles || []; 
-        localStorage.setItem("allowedRoles", JSON.stringify(allowedRoles));
-          console.log("currentUser after login:", currentUser); 
-        renderTable();
         return true;
       }  else {
         Swal.showValidationMessage('اسم المستخدم أو كلمة المرور غير صحيحة');
@@ -697,15 +698,15 @@ document.addEventListener("DOMContentLoaded", function() {
     db.collection("it_team")
       .where("username", "==", storedUser)
       .get()
-      .then(snapshot => {
-        if (!snapshot.empty) {
-          let userData = snapshot.docs[0].data();
-          allowedRoles = userData.roles || [];
-          localStorage.setItem("allowedRoles", JSON.stringify(allowedRoles));
-          renderTable();
-          console.log("AllowedRoles after login:", allowedRoles);
-
-        } else {
+.then(snapshot => {
+    if (!snapshot.empty) {
+      let userData = snapshot.docs[0].data();
+      console.log("userData from Firestore:", userData);
+      allowedRoles = userData.roles || [];
+      localStorage.setItem("allowedRoles", JSON.stringify(allowedRoles));
+      renderTable();
+    }
+ else {
           allowedRoles = [];
           localStorage.setItem("allowedRoles", JSON.stringify([]));
           loadTable();
