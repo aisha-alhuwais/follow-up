@@ -203,7 +203,7 @@ console.log("allowedRoles:", allowedRoles);
 
   filtered.forEach((d, idx) => {
     const key = `${(d.building||"").trim()}-${(d.floor||"").trim()}`;
-    const canEdit = normalizedRoles.includes(key) || currentUser === "admin";
+    const canEdit = (currentUser && currentUser !== "");
     const editBtn = `<button onclick="editClass('${d.id}')" title="تعديل" style="background:none;border:none;cursor:pointer;padding:0;margin:0;font-size:1.2em;">✏️</button>`;
     const row = `<tr>
       <td>${d.status || ""}</td>
