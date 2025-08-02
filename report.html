@@ -98,7 +98,7 @@ function renderTable() {
   const tbody = document.getElementById('tableBody');
   const searchTerm = document.getElementById('searchInput').value.trim();
   let filtered = allClasses;
-  const normalizedRoles = allowedRoles.map(x => x.trim());
+    const normalizedRoles = allowedRoles.map(x => (x || '').replace(/"/g, '').trim());
   if (searchTerm) {
     filtered = filtered.filter(d =>
       (d.no && d.no.toString().includes(searchTerm)) ||
