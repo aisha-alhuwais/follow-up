@@ -42,6 +42,7 @@
     <table>
       <thead>
         <tr>
+          <th>📝</th>
           <th>الحالة</th>
           <th>المبنى</th>
           <th>الدور</th>
@@ -57,7 +58,6 @@
           <th>الإضاءة </th>
           <th>الستائر</th>
           <th>ملاحظات</th>
-          <th>📝</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -118,6 +118,7 @@ function renderTable() {
     const canEdit = normalizedRoles.includes(key) || currentUser === "admin";
     const editBtn = `<button onclick="editClass('${d.id}')" title="تعديل" style="background:none;border:none;cursor:pointer;padding:0;margin:0;font-size:1.2em;">✏️</button>`;
     const row = `<tr>
+      <td>${canEdit ? editBtn : ""}</td>
       <td>${d.status || ""}</td>
       <td>${d.building || ""}</td>
       <td>${d.floor || ""}</td>
@@ -133,7 +134,6 @@ function renderTable() {
       <td>${d.light || ""}</td>
       <td>${d.curtain || ""}</td>
       <td>${d.remark || ""}</td>
-      <td>${canEdit ? editBtn : ""}</td>
     </tr>`;
     tbody.innerHTML += row;
   });
