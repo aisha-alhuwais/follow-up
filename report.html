@@ -192,7 +192,6 @@ function showLogin() {
 }
 
 function editClass(id) {
-  // حماية إضافية عند محاولة التعديل من الكونسول
   const docData = allClasses.find(x => x.id === id);
   if (!docData) return;
   const key = `${(docData.building||"").trim()}-${(docData.floor||"").trim()}`;
