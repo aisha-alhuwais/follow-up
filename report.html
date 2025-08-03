@@ -81,7 +81,9 @@ let currentUser = localStorage.getItem("currentUser") || "";
 let allowedRoles = JSON.parse(localStorage.getItem("allowedRoles") || "[]");
 let allClasses = [];
 let currentBuildingFilter = "all";
-
+function normalize(str) {
+  return (str || "").trim().toLowerCase();
+}
 function loadTable() {
   db.collection(collectionName).onSnapshot(snapshot => {
     allClasses = [];
