@@ -312,8 +312,8 @@ function showLogin() {
   document.getElementById("northBtn").classList.remove("active");
   document.getElementById("southBtn").classList.remove("active");
   document.getElementById("allBtn").classList.remove("active");
-  if (building === "الشمالي") document.getElementById("northBtn").classList.add("active");
-  else if (building === "الجنوبي") document.getElementById("southBtn").classList.add("active");
+  if  (building === "الجنوبي") document.getElementById("southBtn").classList.add("active");
+  else if (building === "الشمالي") document.getElementById("northBtn").classList.add("active");
   else document.getElementById("allBtn").classList.add("active");
   renderTable();
 }
@@ -339,8 +339,8 @@ function openAddSwal() {
           <label style="font-weight:700;">الحالة</label>
           <select id="swal-status" class="swal2-input" style="width:100%;">
             <option>🟡</option>
-            <option>🟢</option>
             <option>🔴</option>
+            <option>🟢</option>
           </select>
         </div>
         <div>
