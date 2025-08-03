@@ -81,9 +81,7 @@ let currentUser = localStorage.getItem("currentUser") || "";
 let allowedRoles = JSON.parse(localStorage.getItem("allowedRoles") || "[]");
 let allClasses = [];
 let currentBuildingFilter = "all";
-function normalize(str) {
-  return (str || "").trim().toLowerCase();
-}
+
 function loadTable() {
   db.collection(collectionName).onSnapshot(snapshot => {
     allClasses = [];
@@ -100,16 +98,23 @@ function renderTable() {
   const tbody = document.getElementById('tableBody');
   const searchTerm = document.getElementById('searchInput').value.trim();
   let filtered = allClasses;
-  const normalizedRoles = Array.isArray(allowedRoles)
-    ? allowedRoles.map(x => normalize(x))
-    : [];
+  const normalizedRoles = allowedRoles.map(x => (x || '').replace(/"/g, '').trim());
+  if (searchTerm) {
+    filtered = filtered.filter(d =>
+      (d.no && d.no.toString().includes(searchTerm)) ||
+      (d.type && d.type.includes(searchTerm)) ||
+      (d.remark && d.remark.includes(searchTerm))
+    );
+  } else if (currentBuildingFilter !== "all") {
+    filtered = filtered.filter(d => (d.building || "").trim() === currentBuildingFilter);
+  }
   tbody.innerHTML = "";
   if (filtered.length === 0) {
     tbody.innerHTML = "<tr><td colspan='16'>لا توجد بيانات</td></tr>";
     return;
   }
   filtered.forEach((d) => {
-    const key = `${normalize(d.building)}-${normalize(d.floor)}`;
+    const key = `${(d.building||"").trim()}-${(d.floor||"").trim()}`;
     const canEdit = normalizedRoles.includes(key) || currentUser === "admin";
     const editBtn = `<button onclick="editClass('${d.id}')" title="تعديل" style="background:none;border:none;cursor:pointer;padding:0;margin:0;font-size:1.2em;">✏️</button>`;
     const row = `<tr>
@@ -133,7 +138,6 @@ function renderTable() {
     tbody.innerHTML += row;
   });
 }
-
 
 function filterByBuilding(building) {
   currentBuildingFilter = building;
@@ -188,12 +192,10 @@ function showLogin() {
 }
 
 function editClass(id) {
-const docData = allClasses.find(x => x.id === id);
+  const docData = allClasses.find(x => x.id === id);
   if (!docData) return;
-  const key = `${normalize(docData.building)}-${normalize(docData.floor)}`;
-  const normalizedRoles = Array.isArray(allowedRoles)
-    ? allowedRoles.map(x => normalize(x))
-    : [];
+  const key = `${(docData.building||"").trim()}-${(docData.floor||"").trim()}`;
+  const normalizedRoles = allowedRoles.map(x => (x || '').replace(/"/g, '').trim());
   if (!(normalizedRoles.includes(key) || currentUser === "admin")) {
     Swal.fire('غير مصرح لك بالتعديل على هذه القاعة', '', 'error');
     return;
