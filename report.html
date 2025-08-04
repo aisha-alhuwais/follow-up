@@ -77,14 +77,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const collectionName = "classes";
-let currentUser = localStorage.getItem("currentUser") || "";
-let allowedRoles = JSON.parse(localStorage.getItem("allowedRoles") || "[]");
 let allClasses = [];
 let currentBuildingFilter = "all";
-
-function normalizeNum(str) {
-  return (str || "").replace(/[٠-٩]/g, d => '0123456789'['٠١٢٣٤٥٦٧٨٩'.indexOf(d)]);
-}
 
 function loadTable() {
   db.collection(collectionName).onSnapshot(snapshot => {
@@ -116,13 +110,9 @@ function renderTable() {
     tbody.innerHTML = "<tr><td colspan='16'>لا توجد بيانات</td></tr>";
     return;
   }
-  const normalizedRoles = allowedRoles.map(x => normalizeNum((x || '').replace(/"/g, '').trim()));
   filtered.forEach((d) => {
-    const key = `${normalizeNum((d.building||"").trim())}-${normalizeNum((d.floor||"").trim())}`;
-    const canEdit = normalizedRoles.includes(key) || currentUser === "admin";
-    const editBtn = `<button onclick="editClass('${d.id}')" title="تعديل" style="background:none;border:none;cursor:pointer;padding:0;margin:0;font-size:1.2em;">✏️</button>`;
     const row = `<tr>
-      <td>${canEdit ? editBtn : ""}</td>
+      <td><button onclick="editClass('${d.id}')" title="تعديل" style="background:none;border:none;cursor:pointer;padding:0;margin:0;font-size:1.2em;">✏️</button></td>
       <td>${d.status || ""}</td>
       <td>${d.building || ""}</td>
       <td>${d.floor || ""}</td>
@@ -154,57 +144,9 @@ function filterByBuilding(building) {
   renderTable();
 }
 
-function showLogin() {
-  Swal.fire({
-    title: 'تسجيل دخول الفريق',
-    html: `<input id="swal-username" class="swal2-input" placeholder="اسم المستخدم">
-           <input id="swal-password" type="password" class="swal2-input" placeholder="كلمة المرور">`,
-    confirmButtonText: 'دخول',
-    showCancelButton: true,
-    preConfirm: async () => {
-      const username = document.getElementById('swal-username').value.trim();
-      const password = document.getElementById('swal-password').value;
-      if (!username || !password) {
-        Swal.showValidationMessage('أدخل جميع البيانات');
-        return false;
-      }
-      const querySnapshot = await db.collection("it_team")
-        .where("username", "==", username)
-        .where("password", "==", password)
-        .get();
-      if (!querySnapshot.empty) {
-        currentUser = username;
-        localStorage.setItem("currentUser", currentUser);
-        let userData = querySnapshot.docs[0].data();
-        allowedRoles = userData.roles || [];
-        localStorage.setItem("allowedRoles", JSON.stringify(allowedRoles));
-        console.log("✔️ تسجيل دخول صحيح", currentUser, allowedRoles);
-        return true;
-      } else {
-        Swal.showValidationMessage('اسم المستخدم أو كلمة المرور غير صحيحة');
-        return false;
-      }
-    }
-  }).then((result) => {
-    if (result.isConfirmed) {
-      Swal.fire({
-        title: 'تم تسجيل الدخول بنجاح!',
-        icon: 'success'
-      }).then(() => location.reload());
-    }
-  });
-}
-
 function editClass(id) {
   const docData = allClasses.find(x => x.id === id);
   if (!docData) return;
-  const key = `${normalizeNum((docData.building||"").trim())}-${normalizeNum((docData.floor||"").trim())}`;
-  const normalizedRoles = allowedRoles.map(x => normalizeNum((x || '').replace(/"/g, '').trim()));
-  if (!(normalizedRoles.includes(key) || currentUser === "admin")) {
-    Swal.fire('غير مصرح لك بالتعديل على هذه القاعة', '', 'error');
-    return;
-  }
-  // نافذة التعديل
   Swal.fire({
     title: `<div style="font-weight:900; font-size:1.3em; color:#1a3765; margin-bottom:5px; letter-spacing:1px;">تعديل بيانات القاعة</div>`,
     width: 900,
@@ -371,7 +313,7 @@ function editClass(id) {
     if (result.isConfirmed && result.value) {
       await db.collection(collectionName).doc(id).update({
         ...result.value,
-        last_edited_by: currentUser || "غير معروف",
+        last_edited_by: "مستخدم",
         last_edited_at: new Date().toISOString()
       })
       .then(() => {
@@ -386,31 +328,7 @@ function editClass(id) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-  let storedUser = localStorage.getItem("currentUser");
-  if (storedUser) {
-    db.collection("it_team")
-      .where("username", "==", storedUser.trim())
-      .get()
-      .then(snapshot => {
-        if (!snapshot.empty) {
-          let userData = snapshot.docs[0].data();
-          allowedRoles = userData.roles || [];
-          localStorage.setItem("allowedRoles", JSON.stringify(allowedRoles));
-          currentUser = storedUser;
-          loadTable();
-        } else {
-          allowedRoles = [];
-          localStorage.setItem("allowedRoles", JSON.stringify([]));
-          currentUser = "";
-          showLogin();
-        }
-      });
-  } else {
-    allowedRoles = [];
-    localStorage.setItem("allowedRoles", JSON.stringify([]));
-    currentUser = "";
-    showLogin();
-  }
+  loadTable();
 });
 </script>
 </body>
