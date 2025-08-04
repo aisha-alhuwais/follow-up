@@ -69,7 +69,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDqMFfWwtzXInusoxsJxgEO5_ptz_fRk6E",
   authDomain: "itu-coa.firebaseapp.com",
   projectId: "itu-coa",
-  storageBucket: "itu-coa.firebasestorage.app",
+  storageBucket: "itu-coa.appspot.com",
   messagingSenderId: "790497191019",
   appId: "1:790497191019:web:a5b4de6f65574457503d2e",
   measurementId: "G-D5L66D3QZP"
@@ -81,6 +81,10 @@ let currentUser = localStorage.getItem("currentUser") || "";
 let allowedRoles = JSON.parse(localStorage.getItem("allowedRoles") || "[]");
 let allClasses = [];
 let currentBuildingFilter = "all";
+
+function normalizeNum(str) {
+  return (str || "").replace(/[٠-٩]/g, d => '0123456789'['٠١٢٣٤٥٦٧٨٩'.indexOf(d)]);
+}
 
 function loadTable() {
   db.collection(collectionName).onSnapshot(snapshot => {
@@ -98,7 +102,6 @@ function renderTable() {
   const tbody = document.getElementById('tableBody');
   const searchTerm = document.getElementById('searchInput').value.trim();
   let filtered = allClasses;
-  const normalizedRoles = allowedRoles.map(x => (x || '').replace(/"/g, '').trim());
   if (searchTerm) {
     filtered = filtered.filter(d =>
       (d.no && d.no.toString().includes(searchTerm)) ||
@@ -113,8 +116,9 @@ function renderTable() {
     tbody.innerHTML = "<tr><td colspan='16'>لا توجد بيانات</td></tr>";
     return;
   }
+  const normalizedRoles = allowedRoles.map(x => normalizeNum((x || '').replace(/"/g, '').trim()));
   filtered.forEach((d) => {
-    const key = `${(d.building||"").trim()}-${(d.floor||"").trim()}`;
+    const key = `${normalizeNum((d.building||"").trim())}-${normalizeNum((d.floor||"").trim())}`;
     const canEdit = normalizedRoles.includes(key) || currentUser === "admin";
     const editBtn = `<button onclick="editClass('${d.id}')" title="تعديل" style="background:none;border:none;cursor:pointer;padding:0;margin:0;font-size:1.2em;">✏️</button>`;
     const row = `<tr>
@@ -194,8 +198,8 @@ function showLogin() {
 function editClass(id) {
   const docData = allClasses.find(x => x.id === id);
   if (!docData) return;
-  const key = `${(docData.building||"").trim()}-${(docData.floor||"").trim()}`;
-  const normalizedRoles = allowedRoles.map(x => (x || '').replace(/"/g, '').trim());
+  const key = `${normalizeNum((docData.building||"").trim())}-${normalizeNum((docData.floor||"").trim())}`;
+  const normalizedRoles = allowedRoles.map(x => normalizeNum((x || '').replace(/"/g, '').trim()));
   if (!(normalizedRoles.includes(key) || currentUser === "admin")) {
     Swal.fire('غير مصرح لك بالتعديل على هذه القاعة', '', 'error');
     return;
