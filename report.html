@@ -10,6 +10,29 @@
     h1 { color: #002147; margin-bottom: 24px;}
     .filter-btn { background: #e5ebf1; color: #0e223a; border: none; border-radius: 14px; padding: 12px 26px; font-family: 'Cairo'; font-weight: bold; font-size: 1.05em; cursor: pointer; transition: 0.13s;}
     .filter-btn.active, .filter-btn:focus { background: #002147 !important; color: #fff !important;}
+    .floor-btn {
+      background: #e5ebf1;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 1.1em;
+      font-family: 'Cairo';
+      font-weight: bold;
+      color: #0e223a;
+      margin: 0 3px;
+      cursor: pointer;
+      transition: 0.15s;
+      box-shadow: 0 2px 6px #0001;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .floor-btn.active {
+      background: #0e223a !important;
+      color: #fff !important;
+      box-shadow: 0 2px 10px #2563eb33;
+    }
     .table-responsive { overflow-x: auto; margin-top: 16px;}
     table { border-collapse: collapse; width: 100%; min-width: 950px;}
     th, td { border: 1px solid #dbeafe; padding: 7px 10px; text-align: center;}
@@ -37,6 +60,7 @@
       <button id="northBtn" onclick="filterByBuilding('الشمالي')" class="filter-btn">المبنى الشمالي</button>
       <button id="southBtn" onclick="filterByBuilding('الجنوبي')" class="filter-btn">المبنى الجنوبي</button>
     </div>
+    <div id="floorsBtns" style="display:flex;gap:5px;margin-right:22px;"></div>
   </div>
   <div class="table-responsive" style="overflow-x:auto; width:100%;">
     <table>
@@ -79,6 +103,7 @@ const db = firebase.firestore();
 const collectionName = "classes";
 let allClasses = [];
 let currentBuildingFilter = "all";
+let currentFloorFilter = "all";
 
 function loadTable() {
   db.collection(collectionName).onSnapshot(snapshot => {
@@ -88,10 +113,38 @@ function loadTable() {
       data.id = doc.id;
       allClasses.push(data);
     });
+    renderFloorsBtns(); 
     renderTable();
   });
 }
 
+function renderFloorsBtns() {
+  const floors = ["G", "1", "2", "3", "4"];
+  const floorsBtnsDiv = document.getElementById('floorsBtns');
+  floorsBtnsDiv.innerHTML =
+    `<button class="floor-btn${currentFloorFilter === 'all' ? ' active' : ''}" onclick="filterByFloor('all')" title="عرض كل الأدوار">✖</button>` +
+    floors.map(floor =>
+      `<button class="floor-btn${currentFloorFilter === floor ? ' active' : ''}" onclick="filterByFloor('${floor}')">${floor}</button>`
+    ).join('');
+}
+
+window.filterByFloor = function(floor) {
+  currentFloorFilter = floor;
+  renderFloorsBtns();
+  renderTable();
+}
+
+function filterByBuilding(building) {
+  currentBuildingFilter = building;
+  document.getElementById("northBtn").classList.remove("active");
+  document.getElementById("southBtn").classList.remove("active");
+  document.getElementById("allBtn").classList.remove("active");
+  if (building === "الشمالي") document.getElementById("northBtn").classList.add("active");
+  else if (building === "الجنوبي") document.getElementById("southBtn").classList.add("active");
+  else document.getElementById("allBtn").classList.add("active");
+  renderTable();
+}
+  
 function renderTable() {
   const tbody = document.getElementById('tableBody');
   const searchTerm = document.getElementById('searchInput').value.trim();
@@ -102,8 +155,12 @@ function renderTable() {
       (d.type && d.type.includes(searchTerm)) ||
       (d.remark && d.remark.includes(searchTerm))
     );
-  } else if (currentBuildingFilter !== "all") {
+  }
+  if (currentBuildingFilter !== "all") {
     filtered = filtered.filter(d => (d.building || "").trim() === currentBuildingFilter);
+  }
+  if (currentFloorFilter !== "all") {
+    filtered = filtered.filter(d => (d.floor || "").trim() === currentFloorFilter);
   }
   tbody.innerHTML = "";
   if (filtered.length === 0) {
@@ -131,17 +188,6 @@ function renderTable() {
     </tr>`;
     tbody.innerHTML += row;
   });
-}
-
-function filterByBuilding(building) {
-  currentBuildingFilter = building;
-  document.getElementById("northBtn").classList.remove("active");
-  document.getElementById("southBtn").classList.remove("active");
-  document.getElementById("allBtn").classList.remove("active");
-  if (building === "الشمالي") document.getElementById("northBtn").classList.add("active");
-  else if (building === "الجنوبي") document.getElementById("southBtn").classList.add("active");
-  else document.getElementById("allBtn").classList.add("active");
-  renderTable();
 }
 
 function editClass(id) {
@@ -326,7 +372,6 @@ function editClass(id) {
     }
   });
 }
-
 document.addEventListener("DOMContentLoaded", function() {
   loadTable();
 });
