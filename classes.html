@@ -1,158 +1,153 @@
 <!-- Prepared by: Eng. Aisha Alhuwais | ID: 22101186 -->
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>جدول القاعات الدراسية</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    
-    .filter-btn {
-      background: #e5ebf1;
-      color: #0e223a;
-      border: none;
-      border-radius: 14px;
-      padding: 12px 26px;
-      font-family: 'Cairo', Tahoma, Arial, sans-serif;
-      font-weight: bold;
-      font-size: 1.05em;
-      transition: 0.13s;
-      cursor: pointer;
-    }
-    .filter-btn.active, .filter-btn:focus {
-      background: #002147 !important;
-      color: #fff !important;
-    }
-    .lock-btn {
-      background: #dde4ea;
-      color: #2c333a;
-      border: none;
-      border-radius: 12px;
-      padding: 7px 18px 7px 14px;
-      font-family: 'Cairo', Tahoma, Arial, sans-serif;
-      font-weight: bold;
-      font-size: 1.01em;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .add-btn[disabled] {
-      background: #b3bac2 !important;
-      color: #fff !important;
-      cursor: not-allowed !important;
-      opacity: 0.65;
-    }
-    body { font-family: 'Cairo', Tahoma, Arial, sans-serif; background: #f7fafc; margin: 0; padding: 40px;}
-    .container { max-width: 1100px; margin: auto; background: #fff; border-radius: 16px; box-shadow: 0 2px 16px #0001; padding: 28px;}
-    h1 { color: #002147; margin-bottom: 24px;}
-   
-    .add-btn { background: #002147; color: #fff; border: none; border-radius: 8px; padding: 7px 22px; font-family: 'Cairo', Tahoma, Arial, sans-serif; font-weight: bold; font-size: 1.1em; margin-bottom: 18px; cursor: pointer;}
-    .table-responsive { overflow-x: auto; margin-top: 16px;}
-    table { border-collapse: collapse; width: 100%; min-width: 950px;}
-    th, td { border: 1px solid #dbeafe; padding: 7px 10px; text-align: center;}
-    th { background: #002147; color: #fff;}
-    tr:nth-child(even) td { background: #f3f6fa; }
-    .top-controls {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .filter-group {
-      display: flex;
-      gap: 12px;
-      margin-left: auto;
-    }
-    .search-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      justify-content: center;
-      flex: 1;
-    }
-    .search-input {
-      font-family:'Cairo';
-      padding: 9px 16px;
-      border-radius: 10px;
-      border: 1px solid #d3dce6;
-      min-width: 260px;
-      font-size: 1.15em;
-      text-align: center;
-      box-shadow: 0 2px 6px #0001;
-    }
-    @media (max-width: 700px) {
-      .top-controls { flex-direction: column; gap: 7px; }
-      .search-group { justify-content: flex-start; }
-      .filter-group { margin-left: 0; justify-content: flex-end; }
-      .search-input { min-width: 120px; }
-    }
-  </style>
-  
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<meta charset="UTF-8">
+<title>جدول القاعات الدراسية</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+<style>
+.filter-btn {
+  background: #e5ebf1;
+  color: #0e223a;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 26px;
+  font-family: 'Cairo', Tahoma, Arial, sans-serif;
+  font-weight: bold;
+  font-size: 1.05em;
+  transition: 0.13s;
+  cursor: pointer;
+}
+.filter-btn.active, .filter-btn:focus {
+  background: #002147 !important;
+  color: #fff !important;
+}
+.lock-btn {
+  background: #dde4ea;
+  color: #2c333a;
+  border: none;
+  border-radius: 12px;
+  padding: 7px 18px 7px 14px;
+  font-family: 'Cairo', Tahoma, Arial, sans-serif;
+  font-weight: bold;
+  font-size: 1.01em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.add-btn[disabled] {
+  background: #b3bac2 !important;
+  color: #fff !important;
+  cursor: not-allowed !important;
+  opacity: 0.65;
+}
+body { font-family: 'Cairo', Tahoma, Arial, sans-serif; background: #f7fafc; margin: 0; padding: 40px;}
+.container { max-width: 1100px; margin: auto; background: #fff; border-radius: 16px; box-shadow: 0 2px 16px #0001; padding: 28px;}
+h1 { color: #002147; margin-bottom: 24px;}
+.add-btn { background: #002147; color: #fff; border: none; border-radius: 8px; padding: 7px 22px; font-family: 'Cairo', Tahoma, Arial, sans-serif; font-weight: bold; font-size: 1.1em; margin-bottom: 18px; cursor: pointer;}
+.table-responsive { overflow-x: auto; margin-top: 16px;}
+table { border-collapse: collapse; width: 100%; min-width: 950px;}
+th, td { border: 1px solid #dbeafe; padding: 7px 10px; text-align: center;}
+th { background: #002147; color: #fff;}
+tr:nth-child(even) td { background: #f3f6fa; }
+.top-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.filter-group {
+  display: flex;
+  gap: 12px;
+  margin-left: auto;
+}
+.search-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  flex: 1;
+}
+.search-input {
+  font-family:'Cairo';
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: 1px solid #d3dce6;
+  min-width: 260px;
+  font-size: 1.15em;
+  text-align: center;
+  box-shadow: 0 2px 6px #0001;
+}
+@media (max-width: 700px) {
+  .top-controls { flex-direction: column; gap: 7px; }
+  .search-group { justify-content: flex-start; }
+  .filter-group { margin-left: 0; justify-content: flex-end; }
+  .search-input { min-width: 120px; }
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 </head>
 <body>
 <div class="container">
-
   <!-- زر القفل-->
-<div style="display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 16px;">
+  <div style="display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 16px;">
     <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;">جدول القاعات الدراسية</h1>
-<span id="userIcon"
-  style="font-size:2em;cursor:pointer;"
-  title="تسجيل دخول الفريق"
-  onclick="showTeamLogin()">
-  👤
-</span>
+    <span id="userIcon"
+      style="font-size:2em;cursor:pointer;"
+      title="تسجيل دخول الفريق"
+      onclick="showTeamLogin()">
+      👤
+    </span>
+  </div>
 
-</div>
-  <!-- البحث  -->
+  <!-- البحث -->
   <div class="search-group" style="display:flex;flex-direction:column;align-items:center;margin-bottom:18px;">
     <label style="font-size:1.1em;font-weight:600;margin-bottom:7px;"></label>
     <input type="text" id="searchInput" class="search-input" placeholder="أدخل رقم القاعة" oninput="renderTable()"/>
   </div>
-  
+
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;">
-  <div class="filter-group" style="display:flex; gap:12px;">
-    <button id="allBtn" onclick="filterByBuilding('all')" class="filter-btn active">✖</button>
-    <button id="northBtn" onclick="filterByBuilding('الشمالي')" class="filter-btn">المبنى الشمالي</button>
-    <button id="southBtn" onclick="filterByBuilding('الجنوبي')" class="filter-btn">المبنى الجنوبي</button>
-  </div>
-
-<button class="add-btn filter-btn" id="addClassBtn" onclick="addClassFlow()">
-  إضافة قاعة دراسية +
-</button>
-
-</div>
-
- <div class="table-responsive" style="overflow-x:auto; width:100%;">
-      <table>
-        <thead>
-          <tr>
-            <th>الحالة</th>
-            <th>المبنى</th>
-            <th>الدور</th>
-            <th>نوع القاعة</th>
-            <th>رقم القاعة</th>
-            <th>السعة</th>
-            <th>بوديوم</th>
-            <th>الكمبيوتر</th>
-            <th>الشبكة</th>
-            <th>جهاز العرض</th>
-            <th>جهاز العرض</th>
-            <th>الميكروفون</th>
-            <th>الإضاءة </th>
-            <th>الستائر</th>
-            <th>ملاحظات</th>
-          </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-      </table>
+    <div class="filter-group" style="display:flex; gap:12px;">
+      <button id="allBtn" onclick="filterByBuilding('all')" class="filter-btn active">✖</button>
+      <button id="northBtn" onclick="filterByBuilding('الشمالي')" class="filter-btn">المبنى الشمالي</button>
+      <button id="southBtn" onclick="filterByBuilding('الجنوبي')" class="filter-btn">المبنى الجنوبي</button>
     </div>
+    <button class="add-btn filter-btn" id="addClassBtn" onclick="addClassFlow()">
+      إضافة قاعة دراسية +
+    </button>
   </div>
+
+  <div class="table-responsive" style="overflow-x:auto; width:100%;">
+    <table>
+      <thead>
+        <tr>
+          <th>الحالة</th>
+          <th>المبنى</th>
+          <th>الدور</th>
+          <th>نوع القاعة</th>
+          <th>رقم القاعة</th>
+          <th>السعة</th>
+          <th>بوديوم</th>
+          <th>الكمبيوتر</th>
+          <th>الشبكة</th>
+          <th>جهاز العرض</th>
+          <th>جهاز العرض</th>
+          <th>الميكروفون</th>
+          <th>الإضاءة </th>
+          <th>الستائر</th>
+          <th>ملاحظات</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+</div>
 
 <script>
 // Firebase config
@@ -167,14 +162,15 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const auth = firebase.auth();
 const collectionName = "classes";
 
 let allClasses = [];
-let currentBuildingFilter = "all"; 
+let currentBuildingFilter = "all";
 let currentUser = "";
 let isAdmin = false;
-  
-// kتحميل البيانات
+
+// تحميل البيانات (القراءة عامة، لا تحتاج تسجيل دخول)
 function loadTable() {
   db.collection(collectionName).onSnapshot(snapshot => {
     allClasses = [];
@@ -205,6 +201,7 @@ function renderTable() {
     tbody.innerHTML = "<tr><td colspan='12'>لا توجد بيانات</td></tr>";
     return;
   }
+
   filtered.forEach(d => {
     const row = `<tr>
       <td>${d.status || ""}</td>
@@ -226,29 +223,29 @@ function renderTable() {
     tbody.innerHTML += row;
   });
 }
-  function showTeamLogin() {
+
+// تسجيل دخول الفريق (Firebase Auth) — يفتح صفحة التقرير بعد الدخول
+function showTeamLogin() {
   Swal.fire({
     title: 'تسجيل دخول الفريق',
-    html: `<input id="swal-username" class="swal2-input" placeholder="اسم المستخدم">
+    html: `<input id="swal-email" type="email" class="swal2-input" placeholder="البريد الإلكتروني">
            <input id="swal-password" type="password" class="swal2-input" placeholder="كلمة المرور">`,
     confirmButtonText: 'دخول',
     showCancelButton: true,
     preConfirm: async () => {
-      const username = document.getElementById('swal-username').value.trim();
+      const email = document.getElementById('swal-email').value.trim();
       const password = document.getElementById('swal-password').value.trim();
-      if (!username || !password) {
+      if (!email || !password) {
         Swal.showValidationMessage('أدخل جميع البيانات');
         return false;
       }
-      const teamSnapshot = await db.collection("it_team")
-        .where("username", "==", username)
-        .where("password", "==", password)
-        .get();
-      if (!teamSnapshot.empty) {
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
         return true;
+      } catch (err) {
+        Swal.showValidationMessage('البريد الإلكتروني أو كلمة المرور غير صحيحة');
+        return false;
       }
-      Swal.showValidationMessage('اسم المستخدم أو كلمة المرور غير صحيحة');
-      return false;
     }
   }).then((result) => {
     if (result.isConfirmed && result.value === true) {
@@ -257,35 +254,43 @@ function renderTable() {
   });
 }
 
-
+// تسجيل دخول الأدمن (Firebase Auth + التحقق من صلاحية admin عبر مجموعة users)
 function showLogin() {
   Swal.fire({
     title: 'تسجيل دخول (Admin)',
-    html: `<input id="swal-username" class="swal2-input" placeholder="اسم المستخدم">
+    html: `<input id="swal-email" type="email" class="swal2-input" placeholder="البريد الإلكتروني">
            <input id="swal-password" type="password" class="swal2-input" placeholder="كلمة المرور">`,
     confirmButtonText: 'دخول',
     showCancelButton: true,
-    preConfirm: async () => { 
-      const username = document.getElementById('swal-username').value.trim();
+    preConfirm: async () => {
+      const email = document.getElementById('swal-email').value.trim();
       const password = document.getElementById('swal-password').value.trim();
-      if (!username || !password) {
+      if (!email || !password) {
         Swal.showValidationMessage('أدخل جميع البيانات');
         return false;
       }
-      const adminSnapshot = await db.collection("admin_users")
-        .where("username", "==", username)
-        .where("password", "==", password)
-        .get();
-      if (!adminSnapshot.empty) {
-        isAdmin = true;
-        currentUser = username;
-        document.getElementById("addClassBtn").style.display = "inline-block";
-        console.log('سجل دخول الأدمن');
-        return "admin";
+      try {
+        const cred = await auth.signInWithEmailAndPassword(email, password);
+        const roleDoc = await db.collection("users").doc(cred.user.uid).get();
+
+        if (roleDoc.exists && roleDoc.data().role === "admin") {
+          isAdmin = true;
+          currentUser = email;
+          document.getElementById("addClassBtn").style.display = "inline-block";
+          console.log('سجل دخول الأدمن');
+          return "admin";
+        }
+
+        // الحساب صحيح لكن ليس أدمن
+        await auth.signOut();
+        Swal.showValidationMessage('هذا الحساب ليس لديه صلاحية الإضافة');
+        return false;
+
+      } catch (err) {
+        Swal.showValidationMessage('البريد الإلكتروني أو كلمة المرور غير صحيحة');
+        console.log('فشل تسجيل الدخول', err.code);
+        return false;
       }
-      Swal.showValidationMessage('اسم المستخدم أو كلمة المرور غير صحيحة');
-      console.log('لم يجد الحساب');
-      return false;
     }
   }).then((result) => {
     if (result.isConfirmed && result.value === "admin") {
@@ -295,24 +300,16 @@ function showLogin() {
         timer: 1100,
         showConfirmButton: false
       });
-    } else if (result.isConfirmed && result.value === "team") {
-      Swal.fire({
-        title: 'تم تسجيل الدخول بنجاح (فريق فقط، لا توجد صلاحية إضافة)',
-        icon: 'info',
-        timer: 1200,
-        showConfirmButton: false
-      });
     }
   });
 }
 
-
-  function filterByBuilding(building) {
+function filterByBuilding(building) {
   currentBuildingFilter = building;
   document.getElementById("northBtn").classList.remove("active");
   document.getElementById("southBtn").classList.remove("active");
   document.getElementById("allBtn").classList.remove("active");
-  if  (building === "الجنوبي") document.getElementById("southBtn").classList.add("active");
+  if (building === "الجنوبي") document.getElementById("southBtn").classList.add("active");
   else if (building === "الشمالي") document.getElementById("northBtn").classList.add("active");
   else document.getElementById("allBtn").classList.add("active");
   renderTable();
@@ -334,138 +331,138 @@ function openAddSwal() {
       popup: 'swal-wide-modal'
     },
     html:
-      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-        <div>
-          <label style="font-weight:700;">الحالة</label>
-          <select id="swal-status" class="swal2-input" style="width:100%;">
-            <option>🔴</option>
-            <option>🟡</option>
-            <option>🟢</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-weight:700;">المبنى</label>
-          <select id="swal-building" class="swal2-input" style="width:100%;">
-            <option>الجنوبي</option>
-            <option>الشمالي</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-weight:700;">الدور</label>
-          <select id="swal-floor" class="swal2-input" style="width:100%;">
-            <option>G</option>
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
-            <option>4</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-weight:700;">نوع القاعة</label>
-          <select id="swal-type" class="swal2-input" style="width:100%;">
-            <option>فصل دراسي</option>
-            <option>غرفة تدريب</option>
-            <option>غرفة إجتماعات</option>
-            <option>قاعة عرض</option>
-            <option>مختبر اللغات</option>
-            <option>مختبر الحاسوب</option>
-            <option>تدريب مسرحي</option>
-            <option>مختبر التصوير الصحفي</option>
-            <option>مختبر التحرير</option>
-            <option>إنتاج الصحف</option>
-            <option>مختبر وسائل الإعلام الرقمية</option>
-            <option>مختبر الدعاية والإعلان</option>
-            <option>مختبر الوسائط المتعددة</option>
-            <option>الإخراج الإذاعي</option>
-            <option>المسرح الأسود</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-weight:700;">رقم القاعة</label>
-          <input id="swal-no" class="swal2-input" placeholder="رقم القاعة" required>
-        </div>
-        <div>
-          <label style="font-weight:700;">السعة</label>
-          <input id="swal-cap" class="swal2-input" placeholder="عدد المقاعد" required>
-        </div>
-        <div>
-          <label style="font-weight:700;">بوديوم</label>
-          <select id="swal-podium" class="swal2-input" style="width:100%;">
-            <option>-</option>
-            <option>شغال</option>
-            <option>قيد الصيانة</option>
-            <option>غير شغال</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-weight:700;">الكمبيوتر</label>
-          <select id="swal-pc" class="swal2-input" style="width:100%;">
-            <option>-</option>
-            <option>شغال</option>
-            <option>قيد الصيانة</option>
-            <option>غير شغال</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-weight:700;">الشبكة</label>
-          <select id="swal-network" class="swal2-input" style="width:100%;">
-            <option>-</option>
-            <option>متصل</option>
-            <option>غير متصل</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-weight:700;">جهاز العرض</label>
-          <select id="swal-proj1" class="swal2-input" style="width:100%;">
-            <option>-</option>
-            <option>شغال</option>
-            <option>قيد الصيانة</option>
-            <option>غير شغال</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-weight:700;">جهاز العرض</label>
-          <select id="swal-proj2" class="swal2-input" style="width:100%;">
-             <option>-</option>
-            <option>شغال</option>
-            <option>قيد الصيانة</option>
-            <option>غير شغال</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-weight:700;">الميكروفون</label>
-          <select id="swal-mic" class="swal2-input" style="width:100%;">
-            <option>-</option>
-            <option>شغال</option>
-            <option>قيد الصيانة</option>
-            <option>غير شغال</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-weight:700;">الإضاءة</label>
-          <select id="swal-light" class="swal2-input" style="width:100%;">
-            <option>-</option>
-            <option>شغال</option>
-            <option>قيد الصيانة</option>
-            <option>غير شغال</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-weight:700;">الستائر</label>
-          <select id="swal-curtain" class="swal2-input" style="width:100%;">
-            <option>-</option>
-            <option>شغال</option>
-            <option>قيد الصيانة</option>
-            <option>غير شغال</option>
-          </select>
-        </div>
-        <div style="grid-column:1/-1;">
-          <label style="font-weight:700;">ملاحظات</label>
-          <textarea id="swal-remark" class="swal2-textarea" 
-            placeholder="اكتب أي ملاحظة هنا"
-            style="width:80%;min-height:34px;max-height:100px;resize:vertical;text-align:right;"></textarea>
-        </div>
-      </div>`,
+    `<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div>
+        <label style="font-weight:700;">الحالة</label>
+        <select id="swal-status" class="swal2-input" style="width:100%;">
+          <option>🔴</option>
+          <option>🟡</option>
+          <option>🟢</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-weight:700;">المبنى</label>
+        <select id="swal-building" class="swal2-input" style="width:100%;">
+          <option>الجنوبي</option>
+          <option>الشمالي</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-weight:700;">الدور</label>
+        <select id="swal-floor" class="swal2-input" style="width:100%;">
+          <option>G</option>
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-weight:700;">نوع القاعة</label>
+        <select id="swal-type" class="swal2-input" style="width:100%;">
+          <option>فصل دراسي</option>
+          <option>غرفة تدريب</option>
+          <option>غرفة إجتماعات</option>
+          <option>قاعة عرض</option>
+          <option>مختبر اللغات</option>
+          <option>مختبر الحاسوب</option>
+          <option>تدريب مسرحي</option>
+          <option>مختبر التصوير الصحفي</option>
+          <option>مختبر التحرير</option>
+          <option>إنتاج الصحف</option>
+          <option>مختبر وسائل الإعلام الرقمية</option>
+          <option>مختبر الدعاية والإعلان</option>
+          <option>مختبر الوسائط المتعددة</option>
+          <option>الإخراج الإذاعي</option>
+          <option>المسرح الأسود</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-weight:700;">رقم القاعة</label>
+        <input id="swal-no" class="swal2-input" placeholder="رقم القاعة" required>
+      </div>
+      <div>
+        <label style="font-weight:700;">السعة</label>
+        <input id="swal-cap" class="swal2-input" placeholder="عدد المقاعد" required>
+      </div>
+      <div>
+        <label style="font-weight:700;">بوديوم</label>
+        <select id="swal-podium" class="swal2-input" style="width:100%;">
+          <option>-</option>
+          <option>شغال</option>
+          <option>قيد الصيانة</option>
+          <option>غير شغال</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-weight:700;">الكمبيوتر</label>
+        <select id="swal-pc" class="swal2-input" style="width:100%;">
+          <option>-</option>
+          <option>شغال</option>
+          <option>قيد الصيانة</option>
+          <option>غير شغال</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-weight:700;">الشبكة</label>
+        <select id="swal-network" class="swal2-input" style="width:100%;">
+          <option>-</option>
+          <option>متصل</option>
+          <option>غير متصل</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-weight:700;">جهاز العرض</label>
+        <select id="swal-proj1" class="swal2-input" style="width:100%;">
+          <option>-</option>
+          <option>شغال</option>
+          <option>قيد الصيانة</option>
+          <option>غير شغال</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-weight:700;">جهاز العرض</label>
+        <select id="swal-proj2" class="swal2-input" style="width:100%;">
+          <option>-</option>
+          <option>شغال</option>
+          <option>قيد الصيانة</option>
+          <option>غير شغال</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-weight:700;">الميكروفون</label>
+        <select id="swal-mic" class="swal2-input" style="width:100%;">
+          <option>-</option>
+          <option>شغال</option>
+          <option>قيد الصيانة</option>
+          <option>غير شغال</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-weight:700;">الإضاءة</label>
+        <select id="swal-light" class="swal2-input" style="width:100%;">
+          <option>-</option>
+          <option>شغال</option>
+          <option>قيد الصيانة</option>
+          <option>غير شغال</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-weight:700;">الستائر</label>
+        <select id="swal-curtain" class="swal2-input" style="width:100%;">
+          <option>-</option>
+          <option>شغال</option>
+          <option>قيد الصيانة</option>
+          <option>غير شغال</option>
+        </select>
+      </div>
+      <div style="grid-column:1/-1;">
+        <label style="font-weight:700;">ملاحظات</label>
+        <textarea id="swal-remark" class="swal2-textarea"
+          placeholder="اكتب أي ملاحظة هنا"
+          style="width:80%;min-height:34px;max-height:100px;resize:vertical;text-align:right;"></textarea>
+      </div>
+    </div>`,
     confirmButtonText: 'إضافة',
     showCancelButton: 'true',
     cancelButtonText: "إلغاء",
@@ -496,18 +493,18 @@ function openAddSwal() {
   }).then((result) => {
     if (result.isConfirmed && result.value) {
       db.collection("classes").add(result.value)
-      .then(() => {
-        Swal.fire('تمت الإضافة!', 'تم إضافة الفصل بنجاح', 'success');
-        loadTable();
-      })
-      .catch(() => {
-        Swal.fire('خطأ', 'حدث خطأ أثناء الإضافة!', 'error');
-      });
+        .then(() => {
+          Swal.fire('تمت الإضافة!', 'تم إضافة الفصل بنجاح', 'success');
+          loadTable();
+        })
+        .catch(() => {
+          Swal.fire('خطأ', 'حدث خطأ أثناء الإضافة!', 'error');
+        });
     }
   });
 }
 
-  document.addEventListener("DOMContentLoaded", loadTable);
+document.addEventListener("DOMContentLoaded", loadTable);
 </script>
 </body>
 </html>
