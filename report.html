@@ -106,7 +106,7 @@ const collectionName = "classes";
 let allClasses = [];
 let currentBuildingFilter = "all";
 let currentFloorFilter = "all";
-let isAdmin = false; // يصير true فقط بعد تسجيل دخول ناجح بحساب أدمن
+let isAdmin = false; // يصير true فقط بعد تسجيل دخول ناجح بحساب فريق IT (حقل it:true)
 
 function loadTable() {
   db.collection(collectionName).onSnapshot(snapshot => {
@@ -200,7 +200,7 @@ function ensureAdminLogin(onSuccess) {
     return;
   }
   Swal.fire({
-    title: 'تسجيل الدخول (Admin)',
+    title: 'تسجيل الدخول (فريق IT)',
     html: `<input id="swal-email" type="email" class="swal2-input" placeholder="البريد الإلكتروني" dir="rtl">
            <input id="swal-password" type="password" class="swal2-input" placeholder="كلمة المرور" dir="rtl">`,
     confirmButtonText: 'دخول',
@@ -216,7 +216,7 @@ function ensureAdminLogin(onSuccess) {
       try {
         const cred = await auth.signInWithEmailAndPassword(email, password);
         const roleDoc = await db.collection("users").doc(cred.user.uid).get();
-        if (roleDoc.exists && roleDoc.data().role === "admin") {
+        if (roleDoc.exists && roleDoc.data().it === true) {
           return true;
         }
         await auth.signOut();
@@ -423,6 +423,21 @@ function openEditSwal(id) {
 }
 document.addEventListener("DOMContentLoaded", function() {
   loadTable();
+});
+
+// لو المستخدم مسجل دخول أصلاً (من صفحة classes.html مثلاً)، نتحقق من صلاحيته
+// تلقائياً بدون ما نطلب منه يسجل دخول مرة ثانية
+auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    try {
+      const roleDoc = await db.collection("users").doc(user.uid).get();
+      if (roleDoc.exists && roleDoc.data().it === true) {
+        isAdmin = true;
+      }
+    } catch (e) {
+      // تجاهل بصمت، بيطلب تسجيل دخول عادي لو حاول يعدّل
+    }
+  }
 });
 </script>
 </body>
