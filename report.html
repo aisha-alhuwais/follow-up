@@ -193,7 +193,6 @@ function renderTable() {
   });
 }
 
-// تسجيل دخول الأدمن (Firebase Auth) — يظهر مرة وحدة بالجلسة قبل أول تعديل
 function ensureAdminLogin(onSuccess) {
   if (isAdmin) {
     onSuccess();
@@ -424,9 +423,6 @@ function openEditSwal(id) {
 document.addEventListener("DOMContentLoaded", function() {
   loadTable();
 });
-
-// لو المستخدم مسجل دخول أصلاً (من صفحة classes.html مثلاً)، نتحقق من صلاحيته
-// تلقائياً بدون ما نطلب منه يسجل دخول مرة ثانية
 auth.onAuthStateChanged(async (user) => {
   if (user) {
     try {
@@ -435,7 +431,6 @@ auth.onAuthStateChanged(async (user) => {
         isAdmin = true;
       }
     } catch (e) {
-      // تجاهل بصمت، بيطلب تسجيل دخول عادي لو حاول يعدّل
     }
   }
 });
