@@ -27,7 +27,8 @@ input, select, textarea {
   font-family: 'Cairo', Tahoma, Arial, sans-serif; box-sizing: border-box;
 }
 textarea { resize: vertical; min-height: 48px; max-height: 140px; }
-table { width: 100%; border-collapse: collapse; font-family: 'Cairo', Tahoma, Arial, sans-serif; margin-bottom: 28px;}
+.table-responsive { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-family: 'Cairo', Tahoma, Arial, sans-serif; margin-bottom: 28px; min-width: 600px;}
 th, td { padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: right; }
 th { background: #f1f5f9; color: #374151; }
 .status { padding: 2px 10px; border-radius: 8px; font-size: 14px; font-family: 'Cairo', Tahoma, Arial, sans-serif;}
@@ -122,6 +123,7 @@ th { background: #f1f5f9; color: #374151; }
     </div>
   </form>
 
+  <div class="table-responsive">
   <table>
     <thead>
       <tr>
@@ -134,6 +136,7 @@ th { background: #f1f5f9; color: #374151; }
     </thead>
     <tbody id="addedTasks"></tbody>
   </table>
+  </div>
 </div>
 
 <div class="container">
@@ -143,6 +146,7 @@ th { background: #f1f5f9; color: #374151; }
       <span id="lockEmoji">🔒</span>
     </button>
   </h2>
+  <div class="table-responsive">
   <table>
     <thead>
       <tr>
@@ -159,6 +163,7 @@ th { background: #f1f5f9; color: #374151; }
     </thead>
     <tbody id="taskList"></tbody>
   </table>
+  </div>
 </div>
 
 <script>
