@@ -83,6 +83,7 @@
           <th>الإضاءة </th>
           <th>الستائر</th>
           <th>ملاحظات</th>
+          <th>آخر تعديل</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -167,7 +168,7 @@ function renderTable() {
   }
   tbody.innerHTML = "";
   if (filtered.length === 0) {
-    tbody.innerHTML = "<tr><td colspan='16'>لا توجد بيانات</td></tr>";
+    tbody.innerHTML = "<tr><td colspan='17'>لا توجد بيانات</td></tr>";
     return;
   }
   filtered.forEach((d) => {
@@ -188,9 +189,23 @@ function renderTable() {
       <td>${d.light || ""}</td>
       <td>${d.curtain || ""}</td>
       <td>${d.remark || ""}</td>
+      <td style="font-size:0.85em;color:#555;">${formatLastEdited(d)}</td>
     </tr>`;
     tbody.innerHTML += row;
   });
+}
+
+function formatLastEdited(d) {
+  if (!d.last_edited_at) return "-";
+  let dateStr = "";
+  try {
+    const dt = new Date(d.last_edited_at);
+    dateStr = dt.toLocaleString('ar-KW', { dateStyle: 'short', timeStyle: 'short' });
+  } catch (e) {
+    dateStr = d.last_edited_at;
+  }
+  const who = d.last_edited_by ? d.last_edited_by : "";
+  return `${dateStr}${who ? "<br>" + who : ""}`;
 }
 
 // تسجيل دخول الأدمن (Firebase Auth) — يظهر مرة وحدة بالجلسة قبل أول تعديل
