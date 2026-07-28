@@ -51,6 +51,10 @@
 <div class="container">
   <div style="display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 16px;">
     <h1 style="margin:0;font-size:2.1em;color:#14223A;font-weight:900;letter-spacing:1px;">تقرير عن القاعات الدراسية</h1>
+    <button id="logoutBtn" onclick="doLogout()" title="تسجيل الخروج"
+      style="display:none; background:#fee2e2; color:#b91c1c; border:none; border-radius:12px; padding:7px 14px; font-size:0.95em; font-weight:bold; cursor:pointer; font-family:'Cairo',Tahoma,Arial,sans-serif;">
+      🚪 خروج
+    </button>
   </div>
   <div class="search-group" style="display:flex;flex-direction:column;align-items:center;margin-bottom:18px;">
     <input type="text" id="searchInput" class="search-input" placeholder="أدخل رقم القاعة" oninput="renderTable()"/>
@@ -107,8 +111,8 @@ const collectionName = "classes";
 let allClasses = [];
 let currentBuildingFilter = "all";
 let currentFloorFilter = "all";
-let isAdmin = false;
-let userData = {};
+let isAdmin = false; // true لو role === "admin" (صلاحية كاملة)
+let userData = {}; // بيانات صلاحيات المستخدم الحالي من مجموعة users (role, editPermissions)
 
 function loadTable() {
   db.collection(collectionName).onSnapshot(snapshot => {
@@ -209,6 +213,7 @@ function formatLastEdited(d) {
   return `${dateStr}${who ? "<br>" + who : ""}`;
 }
 
+// يتأكد من تسجيل الدخول (مرة وحدة بالجلسة فقط، ما يعيد السؤال لو فيه جلسة أصلاً)
 function ensureLoggedIn(onSuccess) {
   authReady.then(() => {
     if (auth.currentUser) {
@@ -248,6 +253,7 @@ function ensureLoggedIn(onSuccess) {
   });
 }
 
+// هل يقدر المستخدم الحالي يعدّل هذي القاعة بالذات (حسب مبنى+دور)؟
 function canEditClass(docData) {
   if (isAdmin) return true;
   const perms = Array.isArray(userData.editPermissions) ? userData.editPermissions : [];
@@ -452,24 +458,41 @@ function openEditSwal(id) {
 document.addEventListener("DOMContentLoaded", function() {
   loadTable();
 });
+
+// لو المستخدم مسجل دخول أصلاً (من صفحة classes.html مثلاً)، نتحقق من صلاحيته
+// تلقائياً بدون ما نطلب منه يسجل دخول مرة ثانية.
+// authReady: وعد (promise) ينتظره أي كود يحتاج يعرف حالة الدخول قبل ما يقرر أي شي
 let resolveAuthReady;
 const authReady = new Promise(resolve => { resolveAuthReady = resolve; });
 let authCheckedOnce = false;
 
 auth.onAuthStateChanged(async (user) => {
   if (user) {
+    document.getElementById("logoutBtn").style.display = "inline-block";
     try {
       const roleDoc = await db.collection("users").doc(user.uid).get();
       userData = roleDoc.exists ? roleDoc.data() : {};
       isAdmin = userData.role === "admin";
     } catch (e) {
+      // تجاهل بصمت، بيطلب تسجيل دخول عادي لو حاول يعدّل
     }
+  } else {
+    isAdmin = false;
+    userData = {};
+    document.getElementById("logoutBtn").style.display = "none";
   }
   if (!authCheckedOnce) {
     authCheckedOnce = true;
     resolveAuthReady();
   }
 });
+
+function doLogout() {
+  auth.signOut().then(() => {
+    Swal.fire({ title: 'تم تسجيل الخروج', icon: 'success', timer: 900, showConfirmButton: false });
+  });
+}
+
 
 </script>
 </body>
